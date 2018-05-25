@@ -40,23 +40,7 @@
         @if (Model.Count() == 0)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SqlQueryName)
-                </td>
-                <td>
-                    <div class="sql" style="white-space:normal;">
-                        
-                            @Html.DisplayFor(modelItem => item.SqlQueryContent)
-                        
-                    </div>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SqlQueryCreatedDate)
-                </td>
-                <td>
-                    @Html.ActionLink("Выбрать", "Unloading", new { id = item.SqlQueryId })
-
-                </td>
+                <td>Не найдено</td>
             </tr>
         }
         else
@@ -69,9 +53,9 @@
                     </td>
                     <td>
                         <div class="sql">
-                            <code>
+                            @*<code>
                                 @Html.DisplayFor(modelItem => item.SqlQueryContent)
-                            </code>
+                            </code>*@
                         </div>
                     </td>
                     <td>

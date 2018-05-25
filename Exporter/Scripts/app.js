@@ -104,6 +104,7 @@ function GetCsv() {
 }
 
 function GetExcel() {
+    var file = $("#header")[0].files[0];
     var query = $("#SqlQueryContent").val();
     var parameters = [];
 
@@ -116,13 +117,16 @@ function GetExcel() {
 
     $.ajax({
         url: "/Query/FormExcelFile",
+        dataType: "json",
         type: "POST",
         data: {
+            "header": file,
             "input": query,
             "parameters": parameters
         },
+        //processData: false,
+        //contentType: false,
         cache: false,
-        dataType: "json",
         success: function (data) {
             if (data.fileName != "") {
                 window.location.href = "/Query/GetFile?file=" + data.fileName + "&type=excel";

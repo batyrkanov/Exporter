@@ -1,4 +1,5 @@
-﻿#se-pre-con {
+﻿/*Loader*/
+#se-pre-con {
     position: fixed;
     left: 0px;
     top: 0px;
@@ -76,9 +77,9 @@ body {
 }
 /*Set style for button on Login window*/
 .login {
-    margin-top: 50%;
-    margin-left: 70%;
-    width: 50%;
+    margin-top: 35%;
+    margin-left: 9%;
+    width: 65%;
     height: 40px;
 }
 /*Set style for footer*/
@@ -101,15 +102,22 @@ body {
     }
 /*Set style for Login window*/
 .input100 {
+    color: #ffffff;
+    background-color: #282a36;
     font-family: 'Roboto', sans-serif;
     font-size: 15px;
     line-height: 1.5;
-    color: #666666;
     display: block;
     width: 100%;
-    background: #e2e2e23d;
     height: 40px;
     padding: 0 30px 0 68px;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
 
 .wrap-login100 {
@@ -137,17 +145,68 @@ body {
     margin-bottom: 10px;
 }
 
-.input100 {
-    font-family: 'Roboto', sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
-    color: #666666;
+
+/*------------------------------------------------------------------
+[ Focus ]*/
+.focus-input100 {
     display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
     width: 100%;
-    background: #e2e2e23d;
-    height: 40px;
-    padding: 0 30px 0 68px;
+    height: 100%;
+    box-shadow: 0px 0px 0px 0px;
+    color: #5897fb;
 }
+
+.input100:focus + .focus-input100 {
+    -webkit-animation: anim-shadow 0.5s ease-in-out forwards;
+    animation: anim-shadow 0.5s ease-in-out forwards;
+}
+
+@-webkit-keyframes anim-shadow {
+    to {
+        box-shadow: 0px 0px 70px 25px;
+        opacity: 0;
+    }
+}
+
+@keyframes anim-shadow {
+    to {
+        box-shadow: 0px 0px 70px 25px;
+        opacity: 0;
+    }
+}
+
+.symbol-input100 {
+    font-size: 15px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    border-radius: 25px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding-left: 35px;
+    pointer-events: none;
+    color: #666666;
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+.input100:focus + .focus-input100 + .symbol-input100 {
+    color: #49a1c6;
+    padding-left: 28px;
+}
+
 
 .text-align {
     text-align: left;
@@ -185,7 +244,7 @@ body {
 }
 
 .limiter {
-    margin-top: 14%;
+    margin-top: 10%;
 }
 
 .navbar-inverse {
@@ -265,7 +324,7 @@ textarea {
         opacity: 1;
     }
 }
-
+/*CodeMirror for Query*/
 .CodeMirror-focused.cm-s-dracula.CodeMirror {
     border: 1px solid #66afe9;
     border-radius: 4px;
@@ -307,10 +366,12 @@ a {
         font-family: 'Roboto', sans-serif;
         font-size: 40px;
         line-height: 370px;
-        margin: 15px 25px;
+        margin: 15px 20px;
         font-weight: 400;
         width: 100%;
+        padding-right: 15%;
     }
+
 
     .box span {
         display: block;
@@ -383,8 +444,7 @@ a {
         transform: translateY(-920px);
     }
 
-
-/* Frame */
+/* Frame for main button's*/
 .demo-3 .box {
     background: rgba(0,0,0,0.4);
     color: #fff;
@@ -450,3 +510,31 @@ a {
             -webkit-transform: translateY(-460px);
             transform: translateY(-460px);
         }
+
+/*Pagination*/
+.pagination > li > a,
+.pagination > li > span {
+    background-color: #3d6b98;
+}
+
+.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
+    border-color: #dddddd;
+    background-color: #4ba0ea;
+}
+
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+    background-color: #27435f;
+}
+
+.form-horizontal .control-label, .form-horizontal .radio, .form-horizontal .checkbox, .form-horizontal .radio-inline, .form-horizontal .checkbox-inline {
+    padding-top: 0px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.col-md-1 {
+    width: 4%;
+}
