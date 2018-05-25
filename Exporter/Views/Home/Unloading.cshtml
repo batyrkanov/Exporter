@@ -4,6 +4,10 @@
 }
 <h2>Выгрузка</h2>
 <div class="row">
+    <div class="form-group">
+        <label for="header">Шапка формы:</label>
+        <input type="file" name="header" id="header" class="form-control" />
+    </div>
     @foreach (Exporter.Models.Entities.Parameter param in ViewBag.Parameters)
     {
         <div class="form-group">
