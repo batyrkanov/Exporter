@@ -17,7 +17,6 @@
     @Styles.Render("~/Content/assets/css/pe-icon-7-stroke.css")
 </head>
 <body>
-
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -35,7 +34,6 @@
                     @Html.ActionLink("Имя приложения", "Login", "Account", new { area = "" }, new { @class = "navbar-brand" })
                 }
             </div>
-
             <div class="collapse navbar-collapse">
                 @Html.Partial("_LoginPartial")
             </div>
@@ -43,22 +41,19 @@
     </div>
     <div class="container body-content">
         @RenderBody()
-
-        <footer class="footer">
-            <div class="container-fluid">
-                @if (DateTime.Now.Year == 2018)
-            {
-                    <p class="copyright pull-right">&copy; @DateTime.Now.Year Отдел программирования ГВЦ</p>
-                }
-                else
-                {
-                    <p class="copyright pull-right">&copy; 2018 - @DateTime.Now.Year Отдел программирования ГВЦ</p>
-                }
-            </div>
-        </footer>
     </div>
-    
-
+    <footer class="footer">
+        <div class="container-fluid">
+            @if (DateTime.Now.Year == 2018)
+            {
+                <p class="copyright pull-right">&copy; @DateTime.Now.Year Отдел программирования ГВЦ</p>
+            }
+            else
+            {
+                <p class="copyright pull-right">&copy; 2018 - @DateTime.Now.Year Отдел программирования ГВЦ</p>
+            }
+        </div>
+    </footer>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/Scripts/bootstrap-multiselect.js")
