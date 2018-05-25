@@ -7,12 +7,13 @@
 @using PagedList.Mvc
 <br /><br />
 <h4>Запросы</h4>
+<hr />
 @using (Html.BeginForm("Queries", "Home", FormMethod.Get))
 {
     <div class="col-md-11 search-div">
         <input type="text" id="searching" name="searching" class="form-control search" placeholder="Введите наименование запроса" />
     </div>
-    <div class="col-md-1 search-div">
+    <div class="col-md-1">
         <button type="submit" class="btn btn-default default-btn">
             <i class="fa fa-search"></i>
             Поиск
@@ -20,6 +21,7 @@
 
     </div>
 }
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -40,7 +42,9 @@
         @if (Model.Count() == 0)
         {
             <tr>
-                <td>Не найдено</td>
+                <td>
+                    Ничего не найдено!
+                </td>               
             </tr>
         }
         else
@@ -53,9 +57,9 @@
                     </td>
                     <td>
                         <div class="sql">
-                            @*<code>
-                                @Html.DisplayFor(modelItem => item.SqlQueryContent)
-                            </code>*@
+                            @*<code>*@
+                            @Html.Raw((item.SqlQueryContent.Length > 20 ? item.SqlQueryContent.Substring(0, 45) : item.SqlQueryContent))
+                            @*</code>*@
                         </div>
                     </td>
                     <td>

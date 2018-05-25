@@ -2,9 +2,7 @@
     ViewBag.Title = "Выгрузка";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <h2>Выгрузка</h2>
-
 <div class="row">
     <div class="form-group">
         <label for="header">Шапка формы:</label>
@@ -26,9 +24,9 @@
 <button type="button" class="btn btn-info" onclick="userExec()">Выполнить</button>
 <button type="button" class="btn btn-primary" onclick="GetCsv()">Сохранить в csv файл</button>
 <button type="button" class="btn btn-success" onclick="GetExcel()">Сохранить в xls файл</button>
+<a type="button" class="btn btn-danger" href="@Url.Action("Queries","Home")">Назад</a>
 <span id="download"></span>
 <span id="result"></span>
-
 @section Scripts {
     @Scripts.Render("~/Scripts/app.js")
 }
