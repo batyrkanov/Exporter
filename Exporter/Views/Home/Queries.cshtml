@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "Запросы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model PagedList.IPagedList<Exporter.Models.Entities.SqlQuery>
+@using PagedList.Mvc
+<br /><br />
+<h4>Запросы</h4>
+@using (Html.BeginForm("Queries", "Home", FormMethod.Get))
+{
+    <div class="col-md-11 search-div">
+        <input type="text" id="searching" name="searching" class="form-control search" placeholder="Введите наименование запроса" />
+    </div>
+    <div class="col-md-1 search-div">
+        <button type="submit" class="btn btn-default default-btn">
+            <i class="fa fa-search"></i>
+            Поиск
+        </button>
+
+    </div>
+}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th class="col-md-4">
+                Наименование
+            </th>
+            <th class="col-md-4">
+                Запрос
+            </th>
+            <th class="col-md-4">
+                Создан
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SqlQueryName)
+                </td>
+                <td>
+                    <div class="sql" style="white-space:normal;">
+                        
+                            @Html.DisplayFor(modelItem => item.SqlQueryContent)
+                        
+                    </div>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SqlQueryCreatedDate)
+                </td>
+                <td>
+                    @Html.ActionLink("Выбрать", "Unloading", new { id = item.SqlQueryId })
+
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SqlQueryName)
+                    </td>
+                    <td>
+                        <div class="sql">
+                            <code>
+                                @Html.DisplayFor(modelItem => item.SqlQueryContent)
+                            </code>
+                        </div>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SqlQueryCreatedDate)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Выбрать", "Unloading", new { id = item.SqlQueryId }, new { @class = "btn btn-default" })
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+
+</table>
+Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+

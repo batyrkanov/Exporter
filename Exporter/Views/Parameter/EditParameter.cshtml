@@ -1,0 +1,38 @@
+﻿@model Exporter.Models.Entities.Parameter
+
+<div class="form-horizontal row">
+    <div class="control-label col-md-2">
+        <button type="button" class="btn btn-info pull-right" onclick="saveParamChanges('@ViewBag.ParentId')">Сохранить</button>
+    </div>
+    <input type="hidden" id="ParameterId" name="parameterId" value="@Model.ParameterId" />
+    <div class="col-md-4">
+        @Html.EditorFor(model => model.ParameterName, new { htmlAttributes = new { @class = "form-control", @requried = true } })
+        @Html.ValidationMessageFor(model => model.ParameterName, "", new { @class = "text-danger" })
+        <p>Наименование для замены</p>
+    </div>
+
+
+    <div class="col-md-4">
+        @Html.EditorFor(model => model.ParameterRuName, new { htmlAttributes = new { @class = "form-control", @required = true } })
+        @Html.ValidationMessageFor(model => model.ParameterRuName, "", new { @class = "text-danger" })
+        <p>Наименование на русском</p>
+    </div>
+
+
+    <div class="col-md-2">
+        <select name="ParameterType" id="ParameterType" class="form-control">
+            @foreach (KeyValuePair<int, string> type in ViewBag.Types)
+            {
+                if (type.Value == Model.ParameterType)
+                {
+                    <option value="@type.Key" selected>@type.Value</option>
+                }
+                else
+                {
+                    <option value="@type.Key">@type.Value</option>
+                }
+            }
+        </select>
+        <p>Тип параметра</p>
+    </div>
+</div>

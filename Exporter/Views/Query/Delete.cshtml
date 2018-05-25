@@ -1,0 +1,56 @@
+﻿@model Exporter.Models.Entities.SqlQuery
+
+@{
+    ViewBag.Title = "Удаление";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="se-pre-con" style="display:none;"></div>
+
+<h2>Удаление</h2>
+
+<h3>Вы действительно хотите удалить данный запрос?</h3>
+<div>
+    <h4>Запрос</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.SqlQueryName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SqlQueryName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SqlQueryContent)
+        </dt>
+
+        <dd>
+            <div class="sql">
+                <code>
+                    @Model.SqlQueryContent
+                </code>
+            </div>
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SqlQueryCreatedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SqlQueryCreatedDate)
+        </dd>
+
+    </dl>
+    @using (Html.BeginForm("DeleteConfirmed", "Query", FormMethod.Post, new { enctype = "multipart/form-data", id = "create-form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="hidden" name="id" value="@Model.SqlQueryId" />
+            <input type="submit" value="Удалить" class="btn btn-default" /> |
+            <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Query")">Назад</a>
+        </div>
+    }
+</div>

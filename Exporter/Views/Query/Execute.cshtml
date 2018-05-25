@@ -1,0 +1,33 @@
+﻿@model List<Dictionary<string, object>>
+
+<h2>Вывод</h2>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-warning">
+        <strong>Нет результатов</strong>
+    </div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                @foreach (var row in Model.FirstOrDefault())
+                {
+                    <th>@row.Key</th>
+                }
+            </tr>
+        </thead>
+        @foreach (var row in Model)
+        {
+            <tr>
+                @foreach (var column in row)
+                {
+                    <td>@column.Value</td>
+                }
+            </tr>
+        }
+    </table>
+}
+

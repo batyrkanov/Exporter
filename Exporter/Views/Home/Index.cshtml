@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-6">       
+        <section class="demo-3">
+            <div class="grid">
+                <div class="box">
+                    <a href="@Url.Action("Index", "Parameter")">
+                        <svg width="100%" height="100%">
+                            <line class="top" x1="0" y1="0" x2="900" y2="0" />
+                            <line class="left" x1="0" y1="460" x2="0" y2="-920" />
+                            <line class="bottom" x1="300" y1="460" x2="-600" y2="460" />
+                            <line class="right" x1="300" y1="0" x2="300" y2="1380" />
+                        </svg>
+                        <h3 style="text-align: center;">Параметры</h3>
+                        <span>CRUD</span>
+                        <span>Параметров</span>
+                    </a>
+                </div>
+            </div><!-- /grid -->
+        </section>		
+    </div>
+
+    <div class="col-md-6">     
+        <section class="demo-3">
+            <div class="grid">
+                <div class="box">
+                    <a href="@Url.Action("Index", "Query")">
+                        <svg width="100%" height="100%">
+                            <line class="top" x1="0" y1="0" x2="900" y2="0" />
+                            <line class="left" x1="0" y1="460" x2="0" y2="-920" />
+                            <line class="bottom" x1="300" y1="460" x2="-600" y2="460" />
+                            <line class="right" x1="300" y1="0" x2="300" y2="1380" />
+                        </svg>
+
+                        <h3>SQL Запросы</h3>
+                        <span>CRUD</span>
+                        <span>SQL Запросов</span>
+                    </a>
+                </div>
+            </div><!-- /grid -->
+        </section>		  
+    </div>
+</div>

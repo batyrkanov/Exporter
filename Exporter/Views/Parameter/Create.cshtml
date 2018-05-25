@@ -1,0 +1,63 @@
+﻿@model Exporter.Models.Entities.Parameter
+
+@{
+    ViewBag.Title = "Создание параметра";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="se-pre-con" style="display:none;"></div>
+
+<h2>Создание параметра</h2>
+
+
+@using (Html.BeginForm("Create", "Parameter", FormMethod.Post, new { enctype = "multipart/form-data", id = "create-form" }))
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Заполните поля</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.ParameterName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ParameterName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ParameterName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ParameterRuName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ParameterRuName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ParameterRuName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Тип параметра</label> 
+        <div class="col-md-10">
+            <select name="ParameterType" id="ParameterType" class="form-control">
+                
+                @foreach (KeyValuePair<int, string> type in ViewBag.Types)
+                {
+                    <option value="@type.Key">@type.Value</option>
+
+                }
+            </select>
+            @Html.ValidationMessageFor(model => model.ParameterType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Сохранить" class="btn btn-default" /> |
+            <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Parameter")">Назад</a>
+        </div>
+    </div>
+</div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/app.js")
+}

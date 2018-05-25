@@ -1,0 +1,15 @@
+﻿@model Exporter.Models.Entities.Parameter
+
+<div id="@ViewBag.ParameterNameId">
+    <label class="control-label col-md-2" for="@Model.ParameterName">@Model.ParameterName</label>
+    <input type="hidden" name="parameterIds[]" value="@Model.ParameterId" />
+    <div class="col-md-3">
+        <input type="@Model.ParameterType" name="@Model.ParameterName" data-name="@Model.ParameterName" class="form-control text-box single-line parameter" />
+    </div>
+    <div class="col-md-1 text-center">
+        <button type="button" id="@ViewBag.BtnEditId" data-id="@Model.ParameterId" data-parentid="@ViewBag.ParameterNameId" class="btn btn-default" onclick="editParameter('@ViewBag.BtnEditId')"><i class="fa fa-pencil" aria-hidden="true" title="Редактировать" data-toggle="tooltip" data-placement="top"></i></button>
+    </div>
+    <div class="col-md-1 text-center">
+        <button type="button" id="@ViewBag.BtnRemoveId" class="btn btn-default" onclick="removeParameter('@Model.ParameterId')"><i class="fa fa-trash" aria-hidden="true" title="Удалить" data-toggle="tooltip" data-placement="top"></i></button>
+    </div>
+</div>

@@ -1,0 +1,100 @@
+﻿@using Exporter.Models
+@model LoginModel
+
+@{
+    ViewBag.Title = "Выполнить вход";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Вход в систему</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @Styles.Render("~/Content/bootstrap-multiselect.css")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href=@Url.Content("~/favicon.png") />
+
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="~/Content/Site.css" />
+    @Styles.Render("~/Content/vendor/animate/animate.css")
+    <!--===============================================================================================-->
+    @Styles.Render("~/fonts/font-awesome-4.7.0/css/font-awesome.min.css")
+
+</head>
+<body>
+    @if (!Html.ViewData.ModelState.IsValid)
+    {
+    <div class="container alert alert-info alert-dismissible">
+        <div class="row">
+            <div class="col-md-11">
+                @Html.ValidationSummary(true, "")
+            </div>
+            <div class="col-md-1">
+                <a href="#" class="close text-center" data-dismiss="alert" aria-label="close">&times;</a>
+            </div>
+        </div>
+    </div>
+    }
+    <div class="limiter">
+
+
+        <div class="wrap-login100">
+            <div class="login100-pic js-tilt" data-tilt>
+                <img src="@Url.Content("~/Content/img-01.png")" alt="IMG">
+            </div>
+            <div class="txt3">
+                <span class="font" style="align-content: center;">
+                    НАЦИОНАЛЬНЫЙ СТАТИСТИЧЕСКИЙ КОМИТЕТ КЫРГЫЗСКОЙ РЕСПУБЛИКИ
+                </span>
+            </div>
+            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                <form class="login100-form validate-form">
+                    <div class="txt2">
+                        <h3 class="font">Авторизация</h3><span class="font">Перейти на страницу конструктора</span>
+                        <!--<p class="login100-form-title" data-a11y-title-piece="" id="headingSubtext"></p>-->
+                    </div>
+
+                    <div class="wrap-input100 validate-input">
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "input100", @required = "required", placeholder = "Введите логин" })
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                        </span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input">
+                        @Html.PasswordFor(m => m.Password, new { @class = "input100", @required = "required", placeholder = "Введите пароль", pattern = "^.{6,}$", title = "Длина пароля не может быть меньше 6 знаков." })
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <i class="fa fa-lock" aria-hidden="true"></i>
+                        </span>
+                    </div>
+
+                    
+
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Войти" class="btn btn-default login" />
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="@Url.Content("~/Content/vendor/tilt/tilt.jquery.min.js")"></script>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+﻿@model Exporter.Models.Entities.Parameter
+
+<div class="form-horizontal row">
+    <div class="control-label col-md-2">
+        <button type="button" class="btn btn-info pull-right" onclick="createParam()">Добавить</button>
+    </div>
+
+    <div class="col-md-4" style="padding-left: 2px;">
+        @Html.EditorFor(model => model.ParameterName, new { htmlAttributes = new { @class = "form-control", @placeholder = "наименование для замены", @requried = true } })
+        @Html.ValidationMessageFor(model => model.ParameterName, "", new { @class = "text-danger" })
+        <p>Наименование для замены</p>
+    </div>
+
+
+    <div class="col-md-4" style="padding-left: 0.7%;">
+        @Html.EditorFor(model => model.ParameterRuName, new { htmlAttributes = new { @class = "form-control", @placeholder = "наименование на русском", @required = true } })
+        @Html.ValidationMessageFor(model => model.ParameterRuName, "", new { @class = "text-danger" })
+        <p>Наименование на русском</p>
+    </div>
+
+
+    <div class="col-md-2">
+        <select name="ParameterType" id="ParameterType" class="form-control">
+            @foreach (KeyValuePair<int, string> type in ViewBag.Types)
+            {
+                <option value="@type.Key">@type.Value</option>
+            }
+        </select>
+        <p>Тип параметра</p>
+    </div>
+</div>

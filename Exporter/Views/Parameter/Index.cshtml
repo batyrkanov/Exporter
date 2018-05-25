@@ -1,0 +1,91 @@
+﻿@model PagedList.IPagedList<Exporter.Models.Entities.Parameter>
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Параметры";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="se-pre-con" style="display:none;"></div>
+
+<div class="container-fluid">
+    <div id="se-pre-con" style="display:none;"></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h2>Параметры</h2>
+                    <p>
+                        <a class="btn btn-default" name="createButton" id="createButton" href="@Url.Action("Create","Parameter")">Добавить новую запись</a> |
+                        <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Home")">Назад</a>
+                    </p>
+                </div>
+                <hr />
+                @using (Html.BeginForm("Index", "Parameter", FormMethod.Get))
+                {
+                    <div class="col-md-11 search-div" style="margin-bottom: 2%;">
+                        <input type="text" id="searching" name="searching" class="form-control search" placeholder="Введите наименование параметра для замены" />
+                    </div>
+                    <div class="col-md-1 search-div">
+                        <button type="submit" class="btn btn-default default-btn">
+                            <i class="fa fa-search"></i>
+                            Поиск
+                        </button>
+
+                    </div>
+                }
+                <div class="content" id="accordion">
+                    <table class="table table-striped" id="listTable">
+                        <tr>
+                            <th class="col-md-4">
+                                @Html.DisplayNameFor(model => model.First().ParameterName)
+                            </th>
+                            <th class="col-md-3">
+                                @Html.DisplayNameFor(model => model.First().ParameterType)
+                            </th>
+                            <th class="col-md-3">
+                                @Html.DisplayNameFor(model => model.First().ParameterCreatedDate)
+                            </th>
+                            <th style="text-align:center;">
+                                Действия
+                            </th>
+                        </tr>
+                        @if (Model.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="4">
+                                    Ничего не найдено
+                                </td>
+                            </tr>
+                        }
+                        else
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ParameterName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ParameterType)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ParameterCreatedDate)
+                                        </td>
+                                        <td>
+                                            <div class="table-btn-group">
+                                                <a class="btn btn-default" name="editButton" id="editButton" href="@Url.Action("Edit", "Parameter", new { id = item.ParameterId })"><i class="fa fa-pencil" aria-hidden="true" title="Редактировать" data-toggle="tooltip" data-placement="top"></i></a>
+                                                <a class="btn btn-default" name="detailsButton" id="detailsButton" href="@Url.Action("Details", "Parameter", new { id = item.ParameterId })"><i class="fa fa-eye" aria-hidden="true" title="Просмотреть" data-toggle="tooltip" data-placement="top"></i></a>
+                                                <a class="btn btn-default" name="deleteButton" id="deleteButton" href="@Url.Action("Delete", "Parameter", new { id = item.ParameterId })"><i class="fa fa-trash" aria-hidden="true" title="Удалить" data-toggle="tooltip" data-placement="top"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                    </table>
+                    Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

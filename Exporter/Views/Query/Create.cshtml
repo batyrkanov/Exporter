@@ -1,0 +1,68 @@
+﻿@model Exporter.Models.Entities.SqlQuery
+
+@{
+    ViewBag.Title = "Создание запроса";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="se-pre-con" style="display:none;"></div>
+
+<h2>Создание запроса</h2>
+
+
+@using (Html.BeginForm("Create", "Query", FormMethod.Post, new { enctype = "multipart/form-data", id = "create-form" })) 
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Заполните поля</h4>
+    <hr />
+    <span id="error"></span>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.SqlQueryName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.SqlQueryName, new { htmlAttributes = new { @class = "form-control show-btn" } })
+            @Html.ValidationMessageFor(model => model.SqlQueryName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SqlQueryContent, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.SqlQueryContent, new { htmlAttributes = new { @class = "SqlQueryContent", @style = "display: none;" } })
+            @Html.ValidationMessageFor(model => model.SqlQueryContent, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <span id="create-param"></span>
+    <hr />
+    <div class="row">
+        <button type="button" id="add-button" class="btn btn-primary col-md-2 col-md-offset-2" onclick="addParameter()">+ Добавить параметр</button>
+    </div>
+    <br />
+
+    <span id="fields"></span>
+
+    <div class="form-group action-buttons">
+        <div class="col-md-offset-2 col-md-10" style="padding-left: 1.12%;">
+            <button type="button" class="btn btn-info" onclick="execute()">Выполнить</button> |
+            <input type="submit" value="Сохранить" class="btn btn-default" id="Save" /> |
+            <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Query")">Назад</a>
+        </div>
+    </div>
+</div>
+}
+<span id="result"></span>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/app.js")
+
+    <script>        
+        editorInit();
+
+        disableBtn();
+        onPageLeave();
+    </script>
+}

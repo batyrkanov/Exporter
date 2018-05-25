@@ -1,0 +1,11 @@
+﻿<div class="form-group">
+    <label class="col-md-2 control-label" for="params">Параметр</label>
+    <div class="col-md-10">
+        <select id="select" name="parameters[]" multiple="multiple">
+            @foreach (Exporter.Models.Entities.Parameter param in ViewBag.Parameters)
+            {
+                 <option value="@param.ParameterId">@param.ParameterName</option>
+            }
+        </select>
+    </div>
+</div>
