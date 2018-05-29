@@ -11,21 +11,22 @@ using System.Net;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 using PagedList;
-using ExcApp = Microsoft.Office.Interop.Excel;
 using Exporter.Models;
-
 using Exporter.Models.Entities;
 using Exporter.ActionFilters;
 using System.Runtime.InteropServices;
-using Microsoft.Office.Interop.Excel;
 using System.Web;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.Text;
 
 namespace Exporter.Controllers.Exporter
 {
     public class QueryController : Controller
     {
-        SqlQueryParameterContext db = new SqlQueryParameterContext();
-        ServerDbContext server = new ServerDbContext();
+        readonly SqlQueryParameterContext db = new SqlQueryParameterContext();
+        readonly ServerDbContext server = new ServerDbContext();
 
         [Authorize(Roles = "admin")]
         // GET: Query
@@ -34,7 +35,7 @@ namespace Exporter.Controllers.Exporter
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
-            IPagedList<SqlQuery> queries = db.SqlQueries.Where(x=>x.SqlQueryName.Contains(searching) || searching == null).OrderBy(q => q.SqlQueryName).ToPagedList(pageNumber, pageSize);
+            IPagedList<SqlQuery> queries = db.SqlQueries.Where(x => x.SqlQueryName.Contains(searching) || searching == null).OrderBy(q => q.SqlQueryName).ToPagedList(pageNumber, pageSize);
 
             return View(queries);
         }
@@ -63,7 +64,8 @@ namespace Exporter.Controllers.Exporter
                 }
 
                 return RedirectToAction("index");
-            } catch
+            }
+            catch
             {
                 return View();
             }
@@ -169,7 +171,7 @@ namespace Exporter.Controllers.Exporter
                 using (var command = server.Database.Connection.CreateCommand())
                 {
                     server.Database.Connection.Open();
-                    
+
 
                     if (parameters != null && parameters.Length > 0)
                     {
@@ -201,149 +203,162 @@ namespace Exporter.Controllers.Exporter
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult FormCsvFile(string input, string[] parameters = null)
+        public JsonResult FormCsvFile(string queryId, string[] parameters = null)
         {
-            string query = ReplaceQuotes(input);
+            string fullQuery = db.SqlQueries.Find(int.Parse(queryId)).SqlQueryContent;
+            Dictionary<string, string> queryParameters = null;
+            if (parameters != null && parameters.Length > 0 && !String.IsNullOrEmpty(parameters[0]))
+                queryParameters = FormQueryParametersDictionary(parameters);
 
+            List<string> queries = Regex.Split(fullQuery, "union all", RegexOptions.IgnoreCase).ToList();
+
+            string[] fileData = CreateFileAndGetFileNameAndPath("csv");
+            string csvFileName = fileData.First();
+            string csvFilePath = fileData.Last();
             using (ServerDbContext server = new ServerDbContext())
             {
-                using (DbCommand command = server.Database.Connection.CreateCommand())
+                foreach (string query in queries)
                 {
-                    server.Database.Connection.Open();
-
-
-                    if (parameters != null && parameters.Length > 0)
+                    using (DbCommand command = server.Database.Connection.CreateCommand())
                     {
-                        foreach (string parameter in parameters)
+                        server.Database.Connection.Open();
+
+                        if (queryParameters != null)
+                            foreach (KeyValuePair<string, string> parameter in queryParameters)
+                                if (query.Contains(parameter.Key))
+                                    command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value));
+
+                        command.CommandText = query;
+
+                        using (DbDataReader reader = command.ExecuteReader())
                         {
-                            string[] parts = parameter.Split(new string[] { "-xyz-" }, StringSplitOptions.None);
-                            command.Parameters.Add(new SqlParameter(parts[0], parts[1]));
-                        }
-                    }
-
-                    command.CommandText = query;
-
-                    string ext = "csv";
-
-                    string file = string.Format("{0}.{1}", Guid.NewGuid().ToString(), ext);
-                    string filename = Path.Combine(Server.MapPath("~/Files"), file);
-
-                    using (DbDataReader reader = command.ExecuteReader())
-                    {
-                        using (StreamWriter fs = new StreamWriter(new FileStream(filename, FileMode.CreateNew), System.Text.Encoding.UTF8))
-                        {
-                            string separator = ",";
-
-                            for (int i = 0; i < reader.FieldCount; i++)
+                            using (StreamWriter csvFile = new StreamWriter(csvFilePath, true, Encoding.UTF8))
                             {
-                                string name = reader.GetName(i);
-                                name = WrapItem(name);
-
-                                if (i != (reader.FieldCount - 1))
-                                    fs.Write(name + separator);
-                                else
-                                    fs.Write(name);
-                            }
-                            fs.WriteLine();
-
-                            while (reader.Read())
-                            {
-                                for (int i = 0; i < reader.FieldCount; i++)
+                                while (reader.Read())
                                 {
-                                    string value = reader[i].ToString();
-                                    value = WrapItem(value);
+                                    for (int i = 0; i < reader.FieldCount; i++)
+                                    {
+                                        string value = reader[i].ToString();
+                                        value = WrapItem(value);
 
-                                    if (i != (reader.FieldCount - 1))
-                                        fs.Write(value + separator);
-                                    else
-                                        fs.Write(value);
+                                        if (i != (reader.FieldCount - 1))
+                                            csvFile.Write(value + ",");
+                                        else
+                                            csvFile.Write(value);
+                                    }
+                                    csvFile.WriteLine();
                                 }
-                                fs.WriteLine();
+                                csvFile.Close();
                             }
                         }
+
+                        server.Database.Connection.Close();
                     }
-                    return Json(new { fileName = file, errorMessage = "Ошибка. Не удалось сформировать файл. Попытайтесь позже." });
                 }
             }
+
+            return Json(new { fileName = csvFileName, errorMessage = "Ошибка. Не удалось сформировать файл. Попытайтесь позже." });
         }
 
         [HttpPost]
-        public JsonResult FormExcelFile(HttpPostedFileBase header, string input, string[] parameters = null)
+        public JsonResult FormExcelFile(string queryId, string[] parameters = null, HttpPostedFileBase xlsFile = null)
         {
-            if (header != null && header.ContentLength > 0)
+            // save file or create if uploaded file does not exist
+            string[] fileData = CreateFileAndGetFileNameAndPath("xls");
+            string xlsFileName = fileData.First();
+            string xlsFilePath = fileData.Last();
+
+            if (xlsFile != null && xlsFile.ContentLength > 0)
             {
-                System.IO.Stream fileContent = header.InputStream;
-                Console.WriteLine(fileContent);
+                xlsFile.SaveAs(xlsFilePath);
             }
-            string query = ReplaceQuotes(input);
+            else
+            {
+                Excel.Application app = new Excel.Application()
+                {
+                    Visible = false,
+                    DisplayAlerts = false
+                };
+                Excel.Workbook book = app.Workbooks.Add(Type.Missing);
+                Excel.Worksheet sheet = (Excel.Worksheet)book.ActiveSheet;
+                sheet.Name = "Data";
+                sheet.Cells.Font.Size = 14;
+
+                book.SaveAs(xlsFilePath);
+                book.Close(true, Type.Missing, Type.Missing);
+                app.Quit();
+
+                Marshal.ReleaseComObject(sheet);
+                Marshal.ReleaseComObject(book);
+                Marshal.ReleaseComObject(app);
+            }
+
+            // Разбиваем запрос на мелкие запросы
+            string fullQuery = db.SqlQueries.Find(int.Parse(queryId)).SqlQueryContent;
+            Dictionary<string, string> queryParameters = null;
+            if (parameters != null && parameters.Length > 0 && !String.IsNullOrEmpty(parameters[0]))
+                queryParameters = FormQueryParametersDictionary(parameters);
+
+            List<string> queries = Regex.Split(fullQuery, "union all", RegexOptions.IgnoreCase).ToList();
+
+            Excel.Application xlsApp;
+            Excel.Workbook workbook;
+            Excel.Worksheet worksheet;
+            int? row = null;
             using (ServerDbContext db = new ServerDbContext())
             {
-                using (var command = db.Database.Connection.CreateCommand())
+                foreach (string query in queries)
                 {
-                    db.Database.Connection.Open();
-
-                    if (parameters != null && parameters.Length > 0)
+                    using (DbCommand command = db.Database.Connection.CreateCommand())
                     {
-                        foreach (string param in parameters)
+                        db.Database.Connection.Open();
+
+                        if (queryParameters != null)
+                            foreach (KeyValuePair<string, string> parameter in queryParameters)
+                                if (query.Contains(parameter.Key))
+                                    command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value));
+
+                        command.CommandText = query;
+                        using (var reader = command.ExecuteReader())
                         {
-                            string[] parts = param.Split(new string[] { "-xyz-" }, StringSplitOptions.None);
-                            command.Parameters.Add(new SqlParameter(parts[0], parts[1]));
-                        }
-                    }
-
-                    command.CommandText = query;
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        string file = string.Format("{0}.xls", Guid.NewGuid().ToString());
-                        string filename = Path.Combine(Server.MapPath("~/Files"), file);
-                        Application excel = new Application();
-
-                        //if (excel == null)
-                        //    return "Ошибка. Не удалось сформировать xls файл";
-
-                        excel.Visible = false;
-                        excel.DisplayAlerts = false;
-                        Workbook workbook = excel.Workbooks.Add(Type.Missing);
-
-                        Worksheet worksheet = (Worksheet)workbook.ActiveSheet;
-                        worksheet.Name = "Данные";
-                        worksheet.Cells.Font.Size = 15;
-
-                        int row = 1;
-                        int col = 1;
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            string name = reader.GetName(i);
-                            worksheet.Cells[row, col] = name;
-                            col++;
-                        }
-                        row++;
-                        while (reader.Read())
-                        {
-                            col = 1;
-                            for (int i = 0; i < reader.FieldCount; i++)
+                            xlsApp = new Excel.Application();
+                            workbook = xlsApp.Workbooks.Open(xlsFilePath);
+                            worksheet = (Excel.Worksheet)workbook.Worksheets[1];
+                            if (row == null)
                             {
-                                string value = reader[i].ToString();
-                                worksheet.Cells[row, col] = value;
-                                col++;
+                                object misValue = Missing.Value;
+                                row = 0;
+                                Excel.Range count = worksheet.UsedRange.Columns[1, misValue] as Excel.Range;
+
+                                foreach (Excel.Range cell in count.Cells)
+                                    row++;
                             }
-                            row++;
+
+                            while (reader.Read())
+                            {
+                                row++;
+                                int col = 1;
+                                for (int i = 0; i < reader.FieldCount; i++)
+                                {
+                                    string value = reader[i].ToString();
+                                    worksheet.Cells[row, col] = value;
+                                    col++;
+                                }
+                            }
+
+                            workbook.Save();
+                            workbook.Close();
+                            xlsApp.Quit();
+
+                            Marshal.ReleaseComObject(worksheet);
+                            Marshal.ReleaseComObject(workbook);
+                            Marshal.ReleaseComObject(xlsApp);
                         }
 
-                        workbook.SaveAs(filename);
-                        workbook.Close(true, Type.Missing, Type.Missing);
-                        //workbook.Close(true, filename, Type.Missing);
-                        excel.Quit();
-
-                        Marshal.ReleaseComObject(worksheet);
-                        Marshal.ReleaseComObject(workbook);
-                        Marshal.ReleaseComObject(excel);
-
-                        return Json(new { fileName = file, errorMessage = "Ошибка. Не удалось сформировать файл. Попытайтесь позже." });
+                        db.Database.Connection.Close();
                     }
-
                 }
+                return Json(new { fileName = xlsFileName, errorMessage = "Ошибка. Не удалось сформировать файл. Попытайтесь позже." });
             }
 
         }
@@ -379,9 +394,11 @@ namespace Exporter.Controllers.Exporter
         {
             foreach (string param in parameters)
             {
-                SqlQueryParameter item = new SqlQueryParameter();
-                item.SqlQueryId = queryId;
-                item.ParameterId = int.Parse(param);
+                SqlQueryParameter item = new SqlQueryParameter()
+                {
+                    SqlQueryId = queryId,
+                    ParameterId = int.Parse(param)
+                };
                 db.SqlQueriesParameters.Add(item);
                 db.SaveChanges();
             }
@@ -392,7 +409,7 @@ namespace Exporter.Controllers.Exporter
         {
             List<int> queryParameterIds = db.SqlQueriesParameters.Where(q => q.SqlQueryId == queryId).Select(i => i.ParameterId).ToList();
             db.SqlQueriesParameters.RemoveRange(db.SqlQueriesParameters.Where(q => q.SqlQueryId == queryId));
-            
+
             if (queryParameterIds != null && !(queryParameterIds.Count <= 0))
                 db.Parameters.RemoveRange(db.Parameters.Where(p => queryParameterIds.Contains(p.ParameterId)));
         }
@@ -409,6 +426,27 @@ namespace Exporter.Controllers.Exporter
             List<Models.Entities.Parameter> parameters = db.Parameters.Where(p => paramIds.Contains(p.ParameterId)).ToList();
 
             return parameters;
+        }
+
+        private Dictionary<string, string> FormQueryParametersDictionary(string[] paramsArray)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            foreach (string paramsArrayElement in paramsArray)
+            {
+                string[] parts = paramsArrayElement.Split(new string[] { "-xyz-" }, StringSplitOptions.None);
+                parameters[parts[0]] = parts[1];
+            }
+
+            return parameters;
+        }
+
+        private string[] CreateFileAndGetFileNameAndPath(string extension)
+        {
+            string fileName = string.Format("{0}.{1}", Guid.NewGuid().ToString(), extension);
+            string filePath = Path.Combine(Server.MapPath("~/Files"), fileName);
+            System.IO.File.Create(filePath).Dispose();
+
+            return new string[2] { fileName, filePath };
         }
 
         private string ReplaceQuotes(string query)
