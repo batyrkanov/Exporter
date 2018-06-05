@@ -70,7 +70,9 @@ function userExec() {
 }
 
 function GetCsv() {
-    var query = $("#SqlQueryContent").val();
+    var formData = new FormData();
+
+    var queryId = $("#SqlQueryId").val();
     var parameters = [];
 
     $(".parameter").each(function () {
@@ -80,14 +82,15 @@ function GetCsv() {
         parameters.push(name + "-xyz-" + value);
     });
 
+    formData.append('queryId', queryId);
+    if (typeof parameters !== 'undefined' && parameters.length > 0) {
+        formData.append('parameters', parameters);
+    }
+
     $.ajax({
         url: "/Query/FormCsvFile",
         type: "POST",
-        data: {
-            "input": query,
-            "parameters": parameters
-        },
-        cache: false,
+        data: formData,
         dataType: "json",
         success: function (data) {
             if (data.fileName != "") {
@@ -98,14 +101,19 @@ function GetCsv() {
         },
         error: function (XMLHttpRequest) {
             errorCase(XMLHttpRequest);
-        }
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
     });
     return false;
 }
 
 function GetExcel() {
-    var file = $("#header")[0].files[0];
-    var query = $("#SqlQueryContent").val();
+    var formData = new FormData();
+
+    var file = $("#file")[0].files[0];
+    var queryId = $("#SqlQueryId").val();
     var parameters = [];
 
     $(".parameter").each(function () {
@@ -115,18 +123,18 @@ function GetExcel() {
         parameters.push(name + "-xyz-" + value);
     });
 
+    formData.append('xlsFile', file);
+    formData.append('queryId', queryId);
+
+    if (typeof parameters !== 'undefined' && parameters.length > 0) {
+        formData.append('parameters', parameters);
+    }
+
     $.ajax({
         url: "/Query/FormExcelFile",
         dataType: "json",
         type: "POST",
-        data: {
-            "header": file,
-            "input": query,
-            "parameters": parameters
-        },
-        //processData: false,
-        //contentType: false,
-        cache: false,
+        data: formData,
         success: function (data) {
             if (data.fileName != "") {
                 window.location.href = "/Query/GetFile?file=" + data.fileName + "&type=excel";
@@ -136,7 +144,10 @@ function GetExcel() {
         },
         error: function (XMLHttpRequest) {
             errorCase(XMLHttpRequest)
-        }
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
     });
     return false;
 }

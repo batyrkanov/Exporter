@@ -41,10 +41,10 @@ namespace Exporter.Controllers
 
             List<int> ids = db.SqlQueriesParameters.Where(s => s.SqlQueryId == id).Select(i => i.ParameterId).ToList();
             IQueryable<Parameter> parameters = db.Parameters.Where(p => ids.Contains(p.ParameterId));
-            string query = db.SqlQueries.Find(id).SqlQueryContent;
+            // string query = db.SqlQueries.Find(id).SqlQueryContent;
 
             ViewBag.Parameters = parameters;
-            ViewBag.Query = query;
+            ViewBag.QueryId = id;
 
             return View();
         }

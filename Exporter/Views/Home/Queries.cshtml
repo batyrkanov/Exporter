@@ -58,7 +58,7 @@
                     <td>
                         <div class="sql">
                             @*<code>*@
-                            @Html.Raw((item.SqlQueryContent.Length > 20 ? item.SqlQueryContent.Substring(0, 45) : item.SqlQueryContent))
+                            @Html.Raw((item.SqlQueryContent.Length > 20 ? item.SqlQueryContent.Substring(0, 20) : item.SqlQueryContent))
                             @*</code>*@
                         </div>
                     </td>
