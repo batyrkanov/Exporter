@@ -1,22 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using Exporter.Models.Entities;
-using PagedList.Mvc;
 using PagedList;
+
+using Exporter.Models.Interfaces;
+using Exporter.Models.Entities;
+using Exporter.Models.UnitOfWork;
+using Const = Exporter.Constants;
 
 namespace Exporter.Controllers.Exporter
 {
     public class ParameterController : Controller
     {
-        public static readonly Dictionary<int, string> InputTypes = new Dictionary<int, string>() { { 1, "text" }, { 2, "number" }, { 3, "date" }, { 4, "time" }, { 5, "week" }, { 6, "month" }, { 7, "email" }, { 8, "tel" } };
+        IUnitOfWork unitOfWork;
 
-        SqlQueryParameterContext db = new SqlQueryParameterContext();
-        // GET: Parameter
+        public ParameterController()
+        {
+            this.unitOfWork = new UnitOfWork();
+        }
+
+        public ParameterController(IUnitOfWork unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
 
         [Authorize(Roles = "admin")]
         public ActionResult Index(int? page, string searching)
@@ -25,14 +33,17 @@ namespace Exporter.Controllers.Exporter
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
-            IPagedList<Parameter> parameters = db.Parameters.Where(x=>x.ParameterName.Contains(searching) || searching == null).OrderByDescending(p => p.ParameterCreatedDate).ToPagedList(pageNumber, pageSize);
+            IPagedList<Parameter> parameters = unitOfWork
+                .Parameters
+                .FindParametersByNameOrderedByCreatedDesc(searching)
+                .ToPagedList(pageNumber, pageSize);
             return View(parameters);
         }
 
         [Authorize(Roles = "admin")]
         public ActionResult Create()
         {
-            ViewBag.Types = InputTypes;
+            ViewBag.Types = Const.Constant.InputTypes;
             return View();
         }
 
@@ -41,19 +52,17 @@ namespace Exporter.Controllers.Exporter
         [ValidateAntiForgeryToken]
         public ActionResult Create(Parameter parameter, string ParameterType)
         {
-            try
+            if (parameter != null)
             {
-                parameter.ParameterCreatedDate = DateTime.Now;
-                parameter.ParameterType = InputTypes[int.Parse(ParameterType)];
-                db.Parameters.Add(parameter);
-                db.SaveChanges();
+                string type = Const.Constant.InputTypes[int.Parse(ParameterType)];
+                unitOfWork
+                    .Parameters
+                    .Create(parameter, type);
                 return RedirectToAction("Index");
             }
-            catch (Exception)
-            {
-                ViewBag.Types = InputTypes;
-                return View();
-            }
+
+            ViewBag.Types = Const.Constant.InputTypes;
+            return View();
         }
 
         [Authorize(Roles = "admin")]
@@ -62,29 +71,23 @@ namespace Exporter.Controllers.Exporter
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Parameter parameter = db.Parameters.Find(id);
+            Parameter parameter = unitOfWork.Parameters.Get((int)id);
             if (parameter == null)
                 return HttpNotFound();
 
-            ViewBag.Types = InputTypes;
+            ViewBag.Types = Const.Constant.InputTypes;
             return View(parameter);
         }
 
         [HttpPost]
         [Authorize(Roles = "admin")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Parameter parameter, string ParameterType)
+        public ActionResult Edit(Parameter parameter, string ParameterType) // parameterType = "3"(string)
         {
             if (ModelState.IsValid)
             {
-                Parameter currentParameter = db.Parameters.FirstOrDefault(p => p.ParameterId == parameter.ParameterId);
-                var type = parameter.ParameterType = InputTypes[int.Parse(ParameterType)];
-                currentParameter.ParameterName = parameter.ParameterName;
-                currentParameter.ParameterRuName = parameter.ParameterRuName;
-                currentParameter.ParameterType = type;
-
-                db.Entry(currentParameter).State = EntityState.Modified;
-                db.SaveChanges();
+                string type = Const.Constant.InputTypes[int.Parse(ParameterType)];
+                unitOfWork.Parameters.Update(parameter, type);
 
                 return RedirectToAction("Index");
             }
@@ -97,7 +100,7 @@ namespace Exporter.Controllers.Exporter
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Parameter parameter = db.Parameters.Find(id);
+            Parameter parameter = unitOfWork.Parameters.Get((int)id);
             if (parameter == null)
                 return HttpNotFound();
 
@@ -113,7 +116,7 @@ namespace Exporter.Controllers.Exporter
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Parameter parameter = db.Parameters.Find(id);
+            Parameter parameter = unitOfWork.Parameters.Get((int)id);
             if (parameter == null)
                 return HttpNotFound();
 
@@ -131,7 +134,7 @@ namespace Exporter.Controllers.Exporter
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Parameter parameter = db.Parameters.Find(id);
+            Parameter parameter = unitOfWork.Parameters.Get((int)id);
             if (parameter == null)
                 return HttpNotFound();
 
@@ -139,8 +142,8 @@ namespace Exporter.Controllers.Exporter
             if (!(queries.Count <= 0))
                 return View("~/Views/Parameter/Aborted.cshtml");
 
-            db.Parameters.Remove(parameter);
-            db.SaveChanges();
+            unitOfWork.Parameters.Delete(parameter.ParameterId);
+            unitOfWork.Save();
 
             return RedirectToAction("Index");
         }
@@ -148,7 +151,7 @@ namespace Exporter.Controllers.Exporter
         [AllowAnonymous]
         public ActionResult CreateForm()
         {
-            ViewBag.Types = InputTypes;
+            ViewBag.Types = Const.Constant.InputTypes;
             return PartialView();
         }
 
@@ -157,17 +160,11 @@ namespace Exporter.Controllers.Exporter
         [ValidateAntiForgeryToken]
         public int CreateParameter(string name, string ruName, int type)
         {
-            Parameter parameter = new Parameter
-            {
-                ParameterName = name,
-                ParameterRuName = ruName,
-                ParameterType = InputTypes[type],
-                ParameterCreatedDate = DateTime.Now
-            };
-            db.Parameters.Add(parameter);
-            db.SaveChanges();
+            int parameterId = unitOfWork
+                .Parameters
+                .Create(name, ruName, Const.Constant.InputTypes[type]);
 
-            return parameter.ParameterId;
+            return parameterId;
         }
 
         [HttpPost]
@@ -175,10 +172,13 @@ namespace Exporter.Controllers.Exporter
         [ValidateAntiForgeryToken]
         public ActionResult EditParameter(int parameterId)
         {
-            Parameter parameter = db.Parameters.Find(parameterId);
+            Parameter parameter = unitOfWork
+                .Parameters
+                .Get(parameterId);
             string parentId = String.Format("id-{0}", parameter.ParameterName.Replace("@", ""));
+
             ViewBag.ParentId = parentId;
-            ViewBag.Types = InputTypes;
+            ViewBag.Types = Const.Constant.InputTypes;
 
             return PartialView(parameter);
         }
@@ -190,31 +190,12 @@ namespace Exporter.Controllers.Exporter
         {
             if (ModelState.IsValid)
             {
-                Parameter parameter = db.Parameters.Find(parameterId);
+                string typeName = Const.Constant.InputTypes[type];
+                int paramId = unitOfWork
+                    .Parameters
+                    .SaveChanges(parameterId, name, ruName, typeName);
 
-                parameter.ParameterName = name;
-                parameter.ParameterRuName = ruName;
-                parameter.ParameterType = InputTypes[type];
-                db.Entry(parameter).State = EntityState.Modified;
-                db.SaveChanges();
-
-                //try
-                //{
-                //    db.Entry(parameter).State = EntityState.Modified;
-                //    db.SaveChanges();
-                //}
-                //catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-                //{
-                //    foreach (var errors in ex.EntityValidationErrors)
-                //    {
-                //        foreach (var error in errors.ValidationErrors)
-                //        {
-                //            Console.WriteLine("Property: {0}, Error: {1}", error.PropertyName, error.ErrorMessage);
-                //        }
-                //    }
-                //}
-
-                return parameter.ParameterId;
+                return paramId;
             }
             return parameterId;
         }
@@ -224,12 +205,12 @@ namespace Exporter.Controllers.Exporter
         [ValidateAntiForgeryToken]
         public string RemoveParameter(int parameterId)
         {
-            Parameter parameter = db.Parameters.Find(parameterId);
+            Parameter parameter = unitOfWork.Parameters.Get(parameterId);
 
             string id = String.Format("id-{0}", parameter.ParameterName).Replace("@", "");
 
-            db.Parameters.Remove(parameter);
-            db.SaveChanges();
+            unitOfWork.Parameters.Delete(parameter.ParameterId);
+            unitOfWork.Save();
 
             return id;
         }
@@ -240,7 +221,7 @@ namespace Exporter.Controllers.Exporter
         {
             if (parameterId != null)
             {
-                Parameter parameter = db.Parameters.Find(parameterId);
+                Parameter parameter = unitOfWork.Parameters.Get((int)parameterId);
                 string name = parameter.ParameterName.Replace("@", "");
                 ViewBag.ParameterNameId = String.Format("id-{0}", name);
                 ViewBag.BtnEditId = String.Format("edit-{0}", name);
@@ -255,8 +236,15 @@ namespace Exporter.Controllers.Exporter
         [AllowAnonymous]
         private List<SqlQuery> GetParameterQueries(int parameterId)
         {
-            List<int> queryIds = db.SqlQueriesParameters.Where(s => s.ParameterId == parameterId).Select(i => i.SqlQueryId).ToList();
-            List<SqlQuery> queries = db.SqlQueries.Where(q => queryIds.Contains(q.SqlQueryId)).ToList();
+            List<int> queryIds = unitOfWork
+                .SqlQueryParameters
+                .GetSqlQueryIdByParameterId(parameterId)
+                .ToList();
+
+            List<SqlQuery> queries = unitOfWork
+                .SqlQueries
+                .GetQueriesFromListById(queryIds)
+                .ToList();
 
             return queries;
         }

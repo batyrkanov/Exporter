@@ -24,6 +24,6 @@ namespace Exporter.Models.Entities
         [Display(Name = "Дата создания запроса")]
         public DateTime SqlQueryCreatedDate { get; set; }
 
-        public virtual ICollection<SqlQueryParameter> SqlQueriesParameters { get; set; }
+        public virtual ICollection<SqlQueryParameter> SqlQueryParameters { get; set; }
     }
 }

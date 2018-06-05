@@ -1,41 +1,58 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.Common;
-using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
+using System.Reflection;
+using System.Data.Common;
+using System.Data.Entity;
+using System.Data.SqlClient;
+using System.ComponentModel;
 using System.Web.UI.WebControls;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
+
 using PagedList;
-using Exporter.Models;
+using Excel = Microsoft.Office.Interop.Excel;
+
 using Exporter.Models.Entities;
 using Exporter.ActionFilters;
-using System.Runtime.InteropServices;
-using System.Web;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using Excel = Microsoft.Office.Interop.Excel;
-using System.Text;
+using Exporter.Models.Interfaces;
+using Exporter.Models.UnitOfWork;
+using Exporter.Models;
+using Const = Exporter.Constants;
 
 namespace Exporter.Controllers.Exporter
 {
     public class QueryController : Controller
     {
-        readonly SqlQueryParameterContext db = new SqlQueryParameterContext();
+        IUnitOfWork unitOfWork;
         readonly ServerDbContext server = new ServerDbContext();
+
+        public QueryController()
+        {
+            this.unitOfWork = new UnitOfWork();
+        }
+        public QueryController(IUnitOfWork unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
 
         [Authorize(Roles = "admin")]
         // GET: Query
         public ActionResult Index(int? page, string searching)
         {
-            int pageSize = 10;
+            int pageSize = Const.Constant.NumberOfQueriesPerPage;
             int pageNumber = (page ?? 1);
 
-            IPagedList<SqlQuery> queries = db.SqlQueries.Where(x => x.SqlQueryName.Contains(searching) || searching == null).OrderBy(q => q.SqlQueryName).ToPagedList(pageNumber, pageSize);
+            IPagedList<SqlQuery> queries = unitOfWork
+                .SqlQueries
+                .FindQueriesByNameOrderByName(searching)
+                .ToPagedList(pageNumber, pageSize);
 
             return View(queries);
         }
