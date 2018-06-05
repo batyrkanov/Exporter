@@ -18,6 +18,7 @@ using Exporter.Models.Entities;
 using Exporter.ActionFilters;
 using System.Runtime.InteropServices;
 using Microsoft.Office.Interop.Excel;
+using System.Web;
 
 namespace Exporter.Controllers.Exporter
 {
@@ -267,8 +268,13 @@ namespace Exporter.Controllers.Exporter
         }
 
         [HttpPost]
-        public JsonResult FormExcelFile(string input, string[] parameters = null)
+        public JsonResult FormExcelFile(HttpPostedFileBase header, string input, string[] parameters = null)
         {
+            if (header != null && header.ContentLength > 0)
+            {
+                System.IO.Stream fileContent = header.InputStream;
+                Console.WriteLine(fileContent);
+            }
             string query = ReplaceQuotes(input);
             using (ServerDbContext db = new ServerDbContext())
             {
