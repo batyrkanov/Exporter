@@ -20,7 +20,6 @@ namespace Exporter.Controllers.Exporter
         {
             this.unitOfWork = new UnitOfWork();
         }
-
         public ParameterController(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;

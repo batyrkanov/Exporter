@@ -98,6 +98,20 @@ namespace Exporter.Models.Repositories
             }
         }
 
+        public IEnumerable<Parameter> GetQueryParametersByQueryId(int queryId)
+        {
+            List<int> paramIds = db
+                .SqlQueryParameters
+                .Where(q => q.SqlQueryId == queryId)
+                .Select(i => i.ParameterId)
+                .ToList();
+            IEnumerable<Parameter> parameters = db
+                .Parameters
+                .Where(p => paramIds.Contains(p.ParameterId));
+
+            return parameters;
+        }
+
         public IEnumerable<Parameter> FindParametersByNameOrderedByCreatedDesc(string name)
         {
             IEnumerable<Parameter> parameters = db.Parameters.Where(x => x.ParameterName.Contains(name) || name == null).OrderByDescending(p => p.ParameterCreatedDate);

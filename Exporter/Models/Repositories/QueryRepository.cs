@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using Exporter.Models.Entities;
@@ -43,6 +44,48 @@ namespace Exporter.Models.Repositories
                 db.SqlQueries.Remove(query);
         }
 
+        public void Create(SqlQuery query, string[] parameterIds = null)
+        {
+            query.SqlQueryCreatedDate = DateTime.Now;
+            db.SqlQueries.Add(query);
+            db.Save();
+
+            if (parameterIds != null && parameterIds.Length > 0)
+            {
+                int queryId = query.SqlQueryId;
+                BindQueryAndParams(queryId, parameterIds);
+            }
+        }
+
+        public void Edit(SqlQuery inputQuery, string[] parameterIds = null)
+        {
+            SqlQuery query = db.SqlQueries.Find(inputQuery.SqlQueryId);
+            query.SqlQueryName = inputQuery.SqlQueryName;
+            query.SqlQueryContent = inputQuery.SqlQueryContent;
+
+            RemoveParametersRelationsFromQuery(query.SqlQueryId);
+
+            if (parameterIds != null && parameterIds.Length > 0)
+            {
+                int queryId = query.SqlQueryId;
+                BindQueryAndParams(queryId, parameterIds);
+            }
+
+            db.SetModified(query);
+            db.Save();
+        }
+
+        public void DeleteById(int id)
+        {
+            SqlQuery query = db.SqlQueries.Find(id);
+            if (query != null)
+            {
+                RemoveQueryParameters(id);
+                db.SqlQueries.Remove(query);
+                db.Save();
+            }
+        }
+
         public IEnumerable<SqlQuery> GetQueriesFromListById(List<int> identifiers)
         {
             IEnumerable<SqlQuery> queries = db
@@ -59,6 +102,65 @@ namespace Exporter.Models.Repositories
                 .OrderBy(q => q.SqlQueryName);
 
             return queries;
+        }
+
+        public IEnumerable<SqlQuery> GetQueriesById(int id)
+        {
+            return (from query in db.SqlQueries
+                    where query.SqlQueryId == id
+                    select query);
+        }
+
+        public IEnumerable<SqlQuery> GetQueriesFromListByName(List<SqlQuery> queries, string name)
+        {
+            return queries
+                .Where(q => q.SqlQueryName.Contains(name));
+        }
+
+        public IEnumerable<SqlQuery> OrderQueryByNameDesc(List<SqlQuery> queries)
+        {
+            return queries
+                .OrderByDescending(q => q.SqlQueryName);
+        }
+
+        private void RemoveParametersRelationsFromQuery(int queryId)
+        {
+            db.SqlQueryParameters
+                .RemoveRange(
+                    db.SqlQueryParameters
+                    .Where(q => q.SqlQueryId == queryId)
+                );
+        }
+
+        private void RemoveQueryParameters(int queryId)
+        {
+            List<int> queryParameterIds = db
+                .SqlQueryParameters
+                .Where(q => q.SqlQueryId == queryId)
+                .Select(i => i.ParameterId)
+                .ToList();
+            RemoveParametersRelationsFromQuery(queryId);
+
+            if (queryParameterIds != null && !(queryParameterIds.Count <= 0))
+                db.Parameters.RemoveRange(
+                        db.Parameters
+                        .Where(p => queryParameterIds.Contains(p.ParameterId))
+                        );
+        }
+
+        private void BindQueryAndParams(int queryId, string[] parameters)
+        {
+            foreach (string param in parameters)
+            {
+                SqlQueryParameter item = new SqlQueryParameter()
+                {
+                    SqlQueryId = queryId,
+                    ParameterId = int.Parse(param)
+                };
+
+                db.SqlQueryParameters.Add(item);
+                db.Save();
+            }
         }
     }
 }
