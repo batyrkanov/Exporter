@@ -90,7 +90,7 @@ namespace Exporter.Models.Repositories
             if (parameter != null)
             {
                 parameter.ParameterName = inputParameter.ParameterName;
-                parameter.ParameterRuName = inputParameter.ParameterName;
+                parameter.ParameterRuName = inputParameter.ParameterRuName;
                 parameter.ParameterType = type;
 
                 db.SetModified(parameter);

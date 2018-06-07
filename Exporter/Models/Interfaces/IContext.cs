@@ -5,9 +5,9 @@ namespace Exporter.Models.Interfaces
 {
     public interface IContext
     {
-        DbSet<Parameter> Parameters { get; }
-        DbSet<SqlQuery> SqlQueries { get; }
-        DbSet<SqlQueryParameter> SqlQueryParameters { get; }
+        IDbSet<Parameter> Parameters { get; }
+        IDbSet<SqlQuery> SqlQueries { get; }
+        IDbSet<SqlQueryParameter> SqlQueryParameters { get; }
 
         void SetModified(object entity);
         void Save();

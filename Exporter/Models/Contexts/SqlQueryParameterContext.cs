@@ -14,9 +14,9 @@ namespace Exporter.Models.Contexts
         {
         }
 
-        public DbSet<Parameter> Parameters { get; set; }
-        public DbSet<SqlQuery> SqlQueries { get; set; }
-        public DbSet<SqlQueryParameter> SqlQueryParameters { get; set; }
+        public IDbSet<Parameter> Parameters { get; set; }
+        public IDbSet<SqlQuery> SqlQueries { get; set; }
+        public IDbSet<SqlQueryParameter> SqlQueryParameters { get; set; }
 
         public void SetModified(object entity)
         {
