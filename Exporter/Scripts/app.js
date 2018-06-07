@@ -180,6 +180,11 @@ function createParam() {
         return false;
     }
 
+    if (!(/^@/.test(name))) {
+        alert("Наименование для замены должно начинаться с символа: @");
+        return false;
+    }
+
     $.ajax({
         url: "/Parameter/CreateParameter",
         type: "POST",

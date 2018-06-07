@@ -157,9 +157,8 @@ namespace Exporter.Controllers.Exporter
         public ActionResult Execute(string input, string[] parameters = null)
         {
             Executor executor = new Executor(input, parameters);
-            executor.Execute();
 
-            try { return PartialView(executor.Result); }
+            try { executor.Execute(); return PartialView(executor.Result); }
             catch { return PartialView("~/Views/Query/Error.cshtml"); }
 
         }

@@ -78,7 +78,7 @@ namespace Exporter.Models.Repositories
                 ParameterType = type,
                 ParameterCreatedDate = DateTime.Now
             };
-            db.Parameters.Create();
+            db.Parameters.Add(parameter);
             db.Save();
 
             return parameter.ParameterId;
