@@ -16,6 +16,8 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
     public class ParameterRepository_Tests
     {
         TestDbSet<Parameter> parametersDbSet;
+        Mock<IContext> mock;
+        ParameterRepository repository;
 
         [TestInitialize]
         public void TestInitailize()
@@ -39,178 +41,174 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
                     ParameterCreatedDate = DateTime.Now
                 }
             };
+
+            mock = new Mock<IContext>();
+            mock
+                .Setup(p => p.Parameters)
+                .Returns(parametersDbSet);
+
+            repository = new ParameterRepository(mock.Object);
         }
 
         [TestMethod]
         public void CreateParameter()
         {
             // Arrange
-            var ParametersDbSet = new TestDbSet<Parameter>();
-            var mock = new Mock<IContext>();
-            mock.Setup(x => x.Parameters).Returns(ParametersDbSet);
-
-            ParameterRepository repository = new ParameterRepository(mock.Object);
-
-            // Act
+            int ElementsCountBeforeAct = parametersDbSet.Count();
             Parameter parameter = new Parameter()
             {
                 ParameterName = "@added",
                 ParameterRuName = "added",
                 ParameterCreatedDate = DateTime.Now
             };
+
+            // Act
             repository.Create(parameter);
 
             // Assert
-            Assert.AreEqual(1, ParametersDbSet.Count());
-            Assert.AreEqual("@added", ParametersDbSet.ToList()[0].ParameterName);
+            Assert.AreNotEqual(ElementsCountBeforeAct, parametersDbSet.Count());
+            Assert.IsTrue(parametersDbSet.Count() > ElementsCountBeforeAct);
+            Assert.AreEqual("@added", parametersDbSet.Last().ParameterName);
         }
 
         [TestMethod]
         public void GetAllParameters()
         {
             // Arrange
-            var mock = new Mock<IContext>();
-            mock
-                .Setup(x => x.Parameters)
-                .Returns(parametersDbSet);
-
-            ParameterRepository repository = new ParameterRepository(mock.Object);
+            int ElementsCountBeforeAct = parametersDbSet.Count();
 
             // Act
             IEnumerable<Parameter> allParameters = repository.GetAll();
 
             // Assert
-            Assert.AreEqual(2, allParameters.Count());
-            Assert.AreEqual("@test", allParameters.ToList()[0].ParameterName);
-            Assert.AreNotEqual("@new", allParameters.ToList()[1].ParameterName);
+            Assert.AreEqual(ElementsCountBeforeAct, allParameters.Count());
+            Assert.AreEqual(
+                parametersDbSet.First().ParameterName,
+                allParameters.ToList()[0].ParameterName
+            );
+            Assert.AreEqual(
+                parametersDbSet.ToList()[1].ParameterName,
+                allParameters.ToList()[1].ParameterName
+            );
         }
 
         [TestMethod]
         public void GetParameterById()
         {
             // Arrange
-            var mock = new Mock<IContext>();
-            mock
-                .Setup(x => x.Parameters)
-                .Returns(parametersDbSet);
-
-            ParameterRepository repository = new ParameterRepository(mock.Object);
+            int ElementsCountBeforeAct = parametersDbSet.Count();
 
             // Act
             Parameter parameter_1 = repository.Get(0);
             Parameter parameter_2 = repository.Get(1);
 
             // Assert
-            Assert.AreEqual("@test", parameter_1.ParameterName);
-            Assert.AreEqual(parameter_1, parametersDbSet.ToList()[0]);
+            Assert.AreEqual(
+                parametersDbSet.ElementAt(0).ParameterName, 
+                parameter_1.ParameterName
+            );
+            Assert.AreEqual(parameter_1, parametersDbSet.ElementAt(0));
 
-            Assert.AreEqual("@another_one", parameter_2.ParameterName);
+            Assert.AreEqual(
+                parametersDbSet.ElementAt(1).ParameterName,
+                parameter_2.ParameterName
+            );
             Assert.AreEqual(parameter_2, parametersDbSet.ToList()[1]);
 
-            Assert.AreEqual(2, parametersDbSet.Count());
+            Assert.AreEqual(ElementsCountBeforeAct, parametersDbSet.Count());
         }
 
         [TestMethod]
         public void UpdateParameter()
         {
             // Arrange
-            var mock = new Mock<IContext>();
-            mock
-                .Setup(x => x.Parameters)
-                .Returns(parametersDbSet);
-
-            ParameterRepository repository = new ParameterRepository(mock.Object);
+            Parameter anotherParameterShouldNotBeUpdated = parametersDbSet.ElementAt(1);
+            int ElementsCountBeforeAct = parametersDbSet.Count();
 
             // Act
-            Parameter parameter = parametersDbSet.ToList()[0];
+            Parameter parameter = parametersDbSet.ElementAt(0);
             parameter.ParameterName = "UpdatedName";
             parameter.ParameterRuName = "название было изменено";
             parameter.ParameterType = "number";
             repository.Update(parameter);
 
+            Parameter parameterAfterUpdate = parametersDbSet.ElementAt(0);
+
             // Assert
-            Parameter updatedParameter = parametersDbSet.ToList()[0];
-            Assert.AreEqual("UpdatedName", updatedParameter.ParameterName);
-            Assert.AreEqual("название было изменено", updatedParameter.ParameterRuName);
-            Assert.AreEqual("number", updatedParameter.ParameterType);
+            Assert.AreEqual("UpdatedName", parameterAfterUpdate.ParameterName);
+            Assert.AreEqual("название было изменено", parameterAfterUpdate.ParameterRuName);
+            Assert.AreEqual("number", parameterAfterUpdate.ParameterType);
 
-            Assert.AreEqual("@another_one", parametersDbSet.ToList()[1].ParameterName);
-            Assert.AreNotEqual("UpdatedName", parametersDbSet.ToList()[1].ParameterName);
+            Assert.AreEqual(
+                anotherParameterShouldNotBeUpdated.ParameterName,
+                parametersDbSet.ElementAt(1).ParameterName
+            );
+            Assert.AreNotEqual("UpdatedName", parametersDbSet.ElementAt(1).ParameterName);
 
-            Assert.AreEqual(2, parametersDbSet.Count());
+            Assert.AreEqual(ElementsCountBeforeAct, parametersDbSet.Count());
         }
 
         [TestMethod]
         public void DeleteParameterById()
         {
             // Arrange
-            var mock = new Mock<IContext>();
-            mock
-                .Setup(x => x.Parameters)
-                .Returns(parametersDbSet);
-
-            ParameterRepository repository = new ParameterRepository(mock.Object);
+            int ElementsCountBeforeAct = parametersDbSet.Count();
+            Parameter nextFirstParameter = parametersDbSet.ElementAt(1);
 
             // Act
             repository.Delete(0);
-            repository.Delete(35);
+            repository.Delete(39995);
 
             // Assert
-            Assert.AreEqual(1, parametersDbSet.Count());
-            Assert.AreEqual("@another_one", parametersDbSet.Last().ParameterName);
+            Assert.AreNotEqual(ElementsCountBeforeAct, parametersDbSet.Count());
+            Assert.IsTrue(ElementsCountBeforeAct > parametersDbSet.Count());
+            Assert.IsTrue((ElementsCountBeforeAct - 1) == parametersDbSet.Count());
+            Assert.AreEqual(nextFirstParameter.ParameterName, parametersDbSet.First().ParameterName);
+            Assert.AreEqual(nextFirstParameter, parametersDbSet.First());
         }
 
         [TestMethod]
         public void SaveParameterChanges()
         {
             // Arrange
-            var mock = new Mock<IContext>();
-            mock
-                .Setup(x => x.Parameters)
-                .Returns(parametersDbSet);
-
-            ParameterRepository repository = new ParameterRepository(mock.Object);
+            int parameterIdBeforeAct = parametersDbSet.First().ParameterId;
+            string parameterNameBeforeAct = parametersDbSet.First().ParameterName;
 
             // Act
             Parameter parameter = parametersDbSet.First();
             int parameterId = repository.SaveChanges(parameter.ParameterId, "newName", "новое имя", "phone");
 
-            Parameter modifiedParameter = repository.Get(parameterId);
+            Parameter modifiedParameter = parametersDbSet.ElementAt(parameterId);
 
             // Assert
-            Assert.AreEqual(parameter, modifiedParameter);
+            Assert.AreEqual(parameterIdBeforeAct, modifiedParameter.ParameterId);
 
             Assert.AreEqual("newName", modifiedParameter.ParameterName);
             Assert.AreEqual("новое имя", modifiedParameter.ParameterRuName);
             Assert.AreEqual("phone", modifiedParameter.ParameterType);
 
-            Assert.AreNotEqual("wrongNewName", modifiedParameter.ParameterName);
+            Assert.AreNotEqual(parameterNameBeforeAct, modifiedParameter.ParameterName);
         }
 
         [TestMethod]
         public void CreateMethodWithTwoParams()
         {
             // Arrange
-            var mock = new Mock<IContext>();
-            mock
-                .Setup(x => x.Parameters)
-                .Returns(parametersDbSet);
-
-            ParameterRepository repository = new ParameterRepository(mock.Object);
-
-            // Act
+            int ElementsCountBeforeAct = parametersDbSet.Count();
             Parameter parameter = new Parameter()
             {
                 ParameterName = "@newName",
                 ParameterRuName = "имя"
             };
 
+            // Act
             repository.Create(parameter, "text");
 
             Parameter createdParameter = parametersDbSet.Last();
 
             // Assert
-            Assert.AreEqual(3, parametersDbSet.Count());
+            Assert.AreNotEqual(ElementsCountBeforeAct, parametersDbSet.Count());
+            Assert.IsTrue(parametersDbSet.Count() > ElementsCountBeforeAct);
 
             Assert.AreEqual("@newName", createdParameter.ParameterName);
             Assert.AreEqual("имя", createdParameter.ParameterRuName);
@@ -225,22 +223,19 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
         public void CreateMethodWithThreeParams()
         {
             // Arrange
-            var mock = new Mock<IContext>();
-            mock
-                .Setup(x => x.Parameters)
-                .Returns(parametersDbSet);
-
-            ParameterRepository repository = new ParameterRepository(mock.Object);
+            int ElementsCountBeforeAct = parametersDbSet.Count();
 
             // Act
             int parameterId = repository.Create("new parameter", "новый параметр", "phone");
             Parameter lastParameter = parametersDbSet.Last();
 
             // Assert
-            Assert.AreEqual(3, parametersDbSet.Count());
+            Assert.AreNotEqual(ElementsCountBeforeAct, parametersDbSet.Count());
+            Assert.IsTrue(parametersDbSet.Count() > ElementsCountBeforeAct);
             Assert.IsNotNull(parameterId);
 
             Assert.AreEqual("new parameter", lastParameter.ParameterName);
+            Assert.AreNotEqual("new parameter", parametersDbSet.First().ParameterName);
             Assert.AreEqual("новый параметр", lastParameter.ParameterRuName);
             Assert.AreEqual("phone", lastParameter.ParameterType);
         }
@@ -249,12 +244,14 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
         public void UpdateMethodWithTwoParams()
         {
             // Arrange
-            var mock = new Mock<IContext>();
-            mock
-                .Setup(x => x.Parameters)
-                .Returns(parametersDbSet);
+            int parameterIdBeforeUpdate = parametersDbSet.Last().ParameterId;
+            string parameterNameBeforeUpdate = parametersDbSet.Last().ParameterName;
+            string parameterRuNameBeforeUpdate = parametersDbSet.Last().ParameterRuName;
+            string parameterTypeBeforeUpdate = parametersDbSet.Last().ParameterType;
 
-            ParameterRepository repository = new ParameterRepository(mock.Object);
+            int ElementsCountBeforeAct = parametersDbSet.Count();
+            string anotherParameterNameShouldNotBeUpdated = parametersDbSet.First().ParameterName;
+
             Parameter parameter = parametersDbSet.Last();
             parameter.ParameterName = "@newName";
             parameter.ParameterRuName = "новое имя";
@@ -264,12 +261,18 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
             Parameter modifiedParameter = parametersDbSet.Last();
 
             // Assert
-            Assert.AreEqual(2, parametersDbSet.Count());
+            Assert.AreEqual(ElementsCountBeforeAct, parametersDbSet.Count());
 
             Assert.AreEqual("@newName", modifiedParameter.ParameterName);
+            Assert.AreNotEqual(parameterNameBeforeUpdate, modifiedParameter.ParameterName);
+
             Assert.AreEqual("новое имя", modifiedParameter.ParameterRuName);
-            Assert.AreEqual(1, modifiedParameter.ParameterId);
+            Assert.AreNotEqual(parameterRuNameBeforeUpdate, modifiedParameter.ParameterRuName);
+
+            Assert.AreEqual(parameterIdBeforeUpdate, modifiedParameter.ParameterId);
+
             Assert.AreEqual("phone", modifiedParameter.ParameterType);
+            Assert.AreNotEqual(parameterTypeBeforeUpdate, modifiedParameter.ParameterType);
         }
 
         [TestMethod]

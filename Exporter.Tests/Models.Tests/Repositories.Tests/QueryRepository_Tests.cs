@@ -142,5 +142,313 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
 
             queryRepo = new QueryRepository(mock.Object);
         }
+
+        [TestMethod]
+        public void GetAllQueries()
+        {
+            // Act
+            IEnumerable<SqlQuery> queries = queryRepo.GetAll();
+
+            // Assert
+            Assert.AreEqual(queriesDbSet.Count(), queries.Count());
+            Assert.AreEqual(
+                queriesDbSet.First(),
+                queries.First()
+            );
+            Assert.AreEqual(
+                queriesDbSet.Last(),
+                queries.Last()
+            );
+            Assert.AreEqual(
+                queriesDbSet.First().SqlQueryName,
+                queries.First().SqlQueryName
+            );
+        }
+        
+        [TestMethod]
+        public void GetQuery()
+        {
+            // Arrange
+            int ElementsCountBeforeAct = queriesDbSet.Count();
+            SqlQuery expectedQuery = queriesDbSet.First();
+
+            // Act
+            SqlQuery query = queryRepo.Get(0);
+
+            // Assert
+            Assert.AreEqual(expectedQuery, query);
+            Assert.AreEqual(expectedQuery.SqlQueryName, query.SqlQueryName);
+            Assert.AreEqual(expectedQuery.SqlQueryId, query.SqlQueryId);
+            Assert.AreNotEqual(query, queriesDbSet.Last());
+            Assert.IsTrue(queriesDbSet.Count() == ElementsCountBeforeAct);
+        }
+
+        [TestMethod]
+        public void CreateQuery()
+        {
+            // Arrange
+            int ElementsCountBeforeCreate = queriesDbSet.Count();
+            SqlQuery query = new SqlQuery()
+            {
+                SqlQueryId = 2,
+                SqlQueryName = "Added query",
+                SqlQueryContent = "Select * from test",
+                SqlQueryCreatedDate = DateTime.Now
+            };
+
+            // Act
+            queryRepo.Create(query);
+
+            // Assert
+            Assert.AreNotEqual(ElementsCountBeforeCreate, queriesDbSet.Count());
+            Assert.IsTrue(queriesDbSet.Count() > ElementsCountBeforeCreate);
+            Assert.AreEqual("Added query", queriesDbSet.Last().SqlQueryName);
+        }
+
+        [TestMethod]
+        public void UpdateQuery()
+        {
+            // Arrange
+            int ElementsCountBeforeAct = queriesDbSet.Count();
+
+            int queryIdBeforeAct = queriesDbSet.First().SqlQueryId;
+            string queryNameBeforeAct = queriesDbSet.First().SqlQueryName;
+            string queryContentBeforeAct = queriesDbSet.First().SqlQueryContent;
+
+            string newQueryName = "Updated query name";
+            string newQueryContent = "one word select";
+
+            SqlQuery queryToUpdate = queriesDbSet.First();
+            queryToUpdate.SqlQueryName = newQueryName;
+            queryToUpdate.SqlQueryContent = newQueryContent;
+
+            // Act
+            queryRepo.Update(queryToUpdate);
+            SqlQuery updatedQuery = queriesDbSet.First();
+
+            // Assert
+            Assert.AreEqual(newQueryName, updatedQuery.SqlQueryName);
+            Assert.AreEqual(newQueryContent, updatedQuery.SqlQueryContent);
+
+            Assert.AreNotEqual(queryNameBeforeAct, updatedQuery.SqlQueryName);
+            Assert.AreNotEqual(queryContentBeforeAct, updatedQuery.SqlQueryContent);
+
+            Assert.AreEqual(queryIdBeforeAct, updatedQuery.SqlQueryId);
+            Assert.AreEqual(ElementsCountBeforeAct, queriesDbSet.Count());
+        }
+
+        [TestMethod]
+        public void DeleteQuery()
+        {
+            // Arrange
+            int ElementsCountBeforeAct = queriesDbSet.Count();
+
+            string deletedQueryName = queriesDbSet.First().SqlQueryName;
+            int queryIdToDelete = queriesDbSet.First().SqlQueryId;
+
+            // Act
+            queryRepo.Delete(queryIdToDelete);
+
+            // Assert
+            Assert.AreNotEqual(ElementsCountBeforeAct, queriesDbSet.Count());
+            Assert.IsTrue(ElementsCountBeforeAct > queriesDbSet.Count());
+
+            foreach (SqlQuery query in queriesDbSet)
+                Assert.IsFalse(query.SqlQueryName == deletedQueryName);
+        }
+
+        [TestMethod]
+        public void CreateQueryWithTwoParams_WhenSecondParameterIsNull()
+        {
+            // Arrange
+            int queryElementsCountBeforeAct = queriesDbSet.Count();
+            int queryParametersElementsCountBeforeAct = queryParametersDbSet.Count();
+
+            string newQueryName = "New query";
+            string newQueryСontent = "string type";
+
+            SqlQuery queryToCreate = new SqlQuery()
+            {
+                SqlQueryId = queryElementsCountBeforeAct + 1,
+                SqlQueryName = newQueryName,
+                SqlQueryContent = newQueryСontent,
+                SqlQueryCreatedDate = DateTime.Now
+            };
+            string[] parameterIds = null;
+
+            // Act
+            queryRepo.Create(queryToCreate, parameterIds);
+            SqlQuery createdQuery = queriesDbSet.Last();
+
+            // Assert
+            Assert.AreNotEqual(queryElementsCountBeforeAct, queriesDbSet.Count());
+            Assert.AreEqual(queryParametersElementsCountBeforeAct, queryParametersDbSet.Count());
+
+            Assert.AreEqual(newQueryName, createdQuery.SqlQueryName);
+            Assert.AreEqual(newQueryСontent, createdQuery.SqlQueryContent);
+        }
+
+        [TestMethod]
+        public void CreateQueryWithTwoParams_WhenSecondParameterIsNotNull()
+        {
+            // Arrange
+            int queryElementsCountBeforeAct = queriesDbSet.Count();
+            int queryParametersElementsCountBeforeAct = queryParametersDbSet.Count();
+            int parametersElementsCountBeforeAct = parametersDbSet.Count();
+
+            string createQueryName = "New query";
+            string createQueryContent = "string type";
+
+            int firstQueryParameterId = parametersElementsCountBeforeAct + 1;
+            string firstQueryParameterName = "CreatedQueryFirstParameterName";
+            string firstQueryParameterRuName = "первый параметр запроса";
+            string firstQueryParameterType = "text";
+
+            int secondQueryParameterId = firstQueryParameterId + 1;
+            string secondQueryParameterName = "CreateQuerySecondParameterName";
+            string secondQueryParameterRuName = "второй параметр запроса";
+            string secondQueryParameterType = "phone";
+
+            SqlQuery queryToCreate = new SqlQuery()
+            {
+                SqlQueryId = queryElementsCountBeforeAct + 1,
+                SqlQueryName = createQueryName,
+                SqlQueryContent = createQueryContent,
+                SqlQueryCreatedDate = DateTime.Now
+            };
+
+            Parameter firstParameter = new Parameter()
+            {
+                ParameterId = firstQueryParameterId,
+                ParameterName = firstQueryParameterName,
+                ParameterRuName = firstQueryParameterRuName,
+                ParameterType = firstQueryParameterType
+            };
+            parametersDbSet.Add(firstParameter);
+            Parameter secondParameter = new Parameter()
+            {
+                ParameterId = secondQueryParameterId,
+                ParameterName = secondQueryParameterName,
+                ParameterRuName = secondQueryParameterRuName,
+                ParameterType = secondQueryParameterType
+            };
+            parametersDbSet.Add(secondParameter);
+
+            string[] parameterIds = new string[]
+            {
+               firstParameter.ParameterId.ToString(),
+               secondParameter.ParameterId.ToString()
+            };
+
+            // Act
+            queryRepo.Create(queryToCreate, parameterIds);
+            SqlQuery createdQuery = queriesDbSet.Last();
+            int lastQueryParameterId = queryParametersDbSet.Last().SqlQueryParameterId;
+            SqlQueryParameter[] twoLastQueryParameters = new SqlQueryParameter[]
+            {
+                queryParametersDbSet.Last(),
+                queryParametersDbSet.ToList()[queryParametersDbSet.Count()-2]
+            };
+
+            // Assert
+            Assert.IsTrue(queriesDbSet.Count() > queryElementsCountBeforeAct);
+            Assert.IsTrue(parametersDbSet.Count() > parametersElementsCountBeforeAct);
+            Assert.IsTrue(queryParametersDbSet.Count() > queryParametersElementsCountBeforeAct);
+
+            foreach (SqlQueryParameter queryParameter in twoLastQueryParameters)
+            {
+                Assert.IsTrue(queryParameter.SqlQueryId == createdQuery.SqlQueryId);
+                Assert.IsTrue(
+                    queryParameter.ParameterId == firstQueryParameterId ||
+                    queryParameter.ParameterId == secondQueryParameterId
+                );
+            }
+        }
+
+        [TestMethod]
+        public void EditQueryWithTwoParams_WhenSecondParameterIsNull_ShouldRemoveParams()
+        {
+            // Arrange
+            int queryElementsCountBeforeAct = queriesDbSet.Count();
+            int parametersElementsCountBeforeAct = parametersDbSet.Count();
+            int queryParametersElementsCountBeforeAct = queryParametersDbSet.Count();
+
+            int queryIdBeforeAct = queriesDbSet.First().SqlQueryId;
+            string queryNameBeforeAct = queriesDbSet.First().SqlQueryName;
+            string queryContentBeforeAct = queriesDbSet.First().SqlQueryContent;
+            DateTime queryCreatedDateBeforeAct = queriesDbSet.First().SqlQueryCreatedDate;
+
+            string newQueryName = "new query name";
+            string newQueryContent = "new query content";
+
+            int queryParametersCount = queryParametersDbSet
+                .Where(p => p.SqlQueryId == queriesDbSet.First().SqlQueryId)
+                .Count();
+
+            SqlQuery queryToUpdate = queriesDbSet.First();
+            queryToUpdate.SqlQueryName = newQueryName;
+            queryToUpdate.SqlQueryContent = newQueryContent;
+
+            string[] parameterIds = null;
+
+            // Act
+            queryRepo.Edit(queryToUpdate, parameterIds);
+            SqlQuery updatedQuery = queriesDbSet.ElementAt(queryToUpdate.SqlQueryId);
+
+            // Assert
+            Assert.AreEqual(queryElementsCountBeforeAct, queriesDbSet.Count());
+            Assert.AreEqual(parametersElementsCountBeforeAct, parametersDbSet.Count());
+            Assert.IsTrue(queryParametersElementsCountBeforeAct > queryParametersDbSet.Count());
+
+            Assert.AreEqual(newQueryName, updatedQuery.SqlQueryName);
+            Assert.AreEqual(newQueryContent, updatedQuery.SqlQueryContent);
+            Assert.AreEqual(queryCreatedDateBeforeAct, updatedQuery.SqlQueryCreatedDate);
+
+            Assert.AreEqual(
+                queryParametersElementsCountBeforeAct,
+                (queryParametersDbSet.Count() + queryParametersCount)
+            );
+
+            Assert.IsTrue(
+                queryParametersDbSet
+                .Where(p => p.SqlQueryId == queryToUpdate.SqlQueryId)
+                .Count() <= 0    
+            );
+        }
+
+        [TestMethod]
+        public void DeleteQueryById()
+        {
+            // Arrange
+            int queryElementsCountBeforeAct = queriesDbSet.Count();
+            int toDeleteQueryId = queriesDbSet.First().SqlQueryId;
+            string toDeleteQueryName = queriesDbSet.First().SqlQueryName;
+
+            SqlQuery queryToDelete = queriesDbSet.First();
+
+            // Act
+            queryRepo.Delete(queryToDelete.SqlQueryId);
+
+            // Assert
+            foreach (SqlQuery query in queriesDbSet)
+                Assert.IsTrue(query.SqlQueryId != toDeleteQueryId && query.SqlQueryName != toDeleteQueryName);
+            Assert.IsTrue(queryElementsCountBeforeAct > queriesDbSet.Count());
+            Assert.IsTrue(queriesDbSet.Count() > 0);
+        }
+
+        [TestMethod]
+        public void GetQueriesFromListById_Test()
+        {
+            // Arrange
+            List<int> identifiers = new List<int>() { 0, 1 };
+
+            // Act
+            IEnumerable<SqlQuery> queries = queryRepo.GetQueriesFromListById(identifiers);
+
+            // Assert
+            foreach (SqlQuery query in queries)
+                Assert.IsTrue(identifiers.Contains(query.SqlQueryId));
+            Assert.AreEqual(queries.Count(), queriesDbSet.Count());
+        }
     }
 }
