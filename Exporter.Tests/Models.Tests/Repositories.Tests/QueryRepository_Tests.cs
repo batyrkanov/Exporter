@@ -417,7 +417,7 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
         }
 
         [TestMethod]
-        public void DeleteQueryById()
+        public void DeleteQueryById_Test()
         {
             // Arrange
             int queryElementsCountBeforeAct = queriesDbSet.Count();
@@ -449,6 +449,85 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
             foreach (SqlQuery query in queries)
                 Assert.IsTrue(identifiers.Contains(query.SqlQueryId));
             Assert.AreEqual(queries.Count(), queriesDbSet.Count());
+        }
+
+        [TestMethod]
+        public void GetQueriesFromListByName_Test()
+        {
+            // Arrange
+            string select = "select";
+            string person = "person";
+            List<SqlQuery> allQueries = queriesDbSet.ToList();
+
+            int QueriesWithWordSelectAmount = 0;
+            int QueriesWithWordPersonAmount = 0;
+            foreach (SqlQuery query in queriesDbSet)
+            {
+                if (query.SqlQueryName.Contains(select))
+                    QueriesWithWordSelectAmount++;
+                if (query.SqlQueryName.Contains(person))
+                    QueriesWithWordPersonAmount++;
+            }
+
+            // Act
+            IEnumerable<SqlQuery> queryNameContainsSelect = queryRepo
+                .GetQueriesFromListByName(allQueries, select);
+            IEnumerable<SqlQuery> queryNameContainsPerson = queryRepo
+                .GetQueriesFromListByName(allQueries, person);
+
+            // Assert
+            Assert.AreEqual(
+                QueriesWithWordSelectAmount,
+                queryNameContainsSelect.Count()
+            );
+            Assert.AreEqual(
+                QueriesWithWordPersonAmount,
+                queryNameContainsPerson.Count()
+            );
+
+            foreach (SqlQuery query in queryNameContainsSelect)
+                Assert.IsTrue(query.SqlQueryName.Contains(select));
+            foreach (SqlQuery query in queryNameContainsPerson)
+                Assert.IsTrue(query.SqlQueryName.Contains(person));
+        }
+
+        [TestMethod]
+        public void OrderQueryByNameDesc_Test()
+        {
+            // Arrange
+            List<SqlQuery> unorderedQueries = new List<SqlQuery>() {
+                new SqlQuery()
+                {
+                    SqlQueryId = 1,
+                    SqlQueryName = "QueryNameA",
+                    SqlQueryContent = "QueryContentA",
+                    SqlQueryCreatedDate = DateTime.Today.AddDays(-1)
+                },
+                new SqlQuery() {
+                    SqlQueryId = 0,
+                    SqlQueryName = "QueryNameB",
+                    SqlQueryContent = "QueryContentB",
+                    SqlQueryCreatedDate = DateTime.Today
+                }
+            };
+
+            // Act
+            IEnumerable<SqlQuery> orderedQueries = queryRepo.OrderQueryByNameDesc(unorderedQueries);
+
+            // Assert
+            Assert.AreNotEqual(
+                unorderedQueries.First().SqlQueryName,
+                orderedQueries.First().SqlQueryName
+            );
+            Assert.AreNotEqual(
+                unorderedQueries.Last().SqlQueryName,
+                orderedQueries.Last().SqlQueryName
+            );
+
+            Assert.AreEqual(
+                unorderedQueries.Count(),
+                orderedQueries.Count()
+            );
         }
     }
 }
