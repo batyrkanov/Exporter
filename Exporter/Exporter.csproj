@@ -233,6 +233,7 @@
       <DependentUpon>201803060839151_Deleted types.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Entities\OutputTable.cs" />
     <Compile Include="Models\Interfaces\IContext.cs" />
     <Compile Include="Models\Entities\Parameter.cs" />
     <Compile Include="Models\Entities\SqlQuery.cs" />
@@ -244,6 +245,7 @@
     <Compile Include="Models\Interfaces\IUnitOfWork.cs" />
     <Compile Include="Models\RegisterModels.cs" />
     <Compile Include="Models\Interfaces\IRepository.cs" />
+    <Compile Include="Models\Repositories\OutputTableRepository.cs" />
     <Compile Include="Models\Repositories\ParameterRepository.cs" />
     <Compile Include="Models\Repositories\SqlQueryParameterRepository.cs" />
     <Compile Include="Models\Repositories\QueryRepository.cs" />

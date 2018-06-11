@@ -160,7 +160,6 @@ namespace Exporter.Controllers.Exporter
 
             try { executor.Execute(); return PartialView(executor.Result); }
             catch { return PartialView("~/Views/Query/Error.cshtml"); }
-
         }
 
         [HttpPost]
@@ -170,6 +169,13 @@ namespace Exporter.Controllers.Exporter
             CsvFormer csvFormer = new CsvFormer(unitOfWork, queryId, parameters);
             csvFormer.FormDocument();
 
+            unitOfWork
+                .OutputTables.
+                RemoveQueryOutputTableIfExists(int.Parse(queryId), "csv");
+            unitOfWork
+                .OutputTables
+                .BindOutputTableToQuery(int.Parse(queryId), csvFormer.FileName, "csv");
+
             return Json(new { fileName = csvFormer.FileName, errorMessage = "Ошибка. Не удалось сформировать файл. Попытайтесь позже." });
         }
 
@@ -178,6 +184,13 @@ namespace Exporter.Controllers.Exporter
         {
             XlsFormer xlsFormer = new XlsFormer(unitOfWork, queryId, parameters, xlsFile);
             xlsFormer.FormDocument();
+
+            unitOfWork.
+                OutputTables.
+                RemoveQueryOutputTableIfExists(int.Parse(queryId), "xls");
+            unitOfWork.
+                OutputTables.
+                BindOutputTableToQuery(int.Parse(queryId), xlsFormer.FileName, "xls");
 
             return Json(new { fileName = xlsFormer.FileName, errorMessage = "Ошибка. Не удалось сформировать файл. Попытайтесь позже." });
         }

@@ -9,6 +9,7 @@ namespace Exporter.Models.Interfaces
         ParameterRepository Parameters { get; }
         QueryRepository SqlQueries { get; }
         SqlQueryParameterRepository SqlQueryParameters { get; }
+        OutputTableRepository OutputTables { get; }
         void Save();
     }
 }

@@ -17,6 +17,7 @@ namespace Exporter.Models.Contexts
         public IDbSet<Parameter> Parameters { get; set; }
         public IDbSet<SqlQuery> SqlQueries { get; set; }
         public IDbSet<SqlQueryParameter> SqlQueryParameters { get; set; }
+        public IDbSet<OutputTable> OutputTables { get; set; }
 
         public void SetModified(object entity)
         {
@@ -43,6 +44,9 @@ namespace Exporter.Models.Contexts
                     q.ParameterId,
                     q.SqlQueryId
                 });
+            builder.Entity<OutputTable>().HasKey(t =>
+                new { t.Id, t.QueryId }
+            );
 
             // Relationships
             builder.Entity<SqlQueryParameter>()

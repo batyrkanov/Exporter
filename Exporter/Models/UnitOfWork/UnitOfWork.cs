@@ -13,6 +13,7 @@ namespace Exporter.Models.UnitOfWork
         private ParameterRepository parameterRepository;
         private QueryRepository queryRepository;
         private SqlQueryParameterRepository sqlQueryParameterRepository;
+        private OutputTableRepository outputTableRepository;
         
 
         public UnitOfWork()
@@ -52,6 +53,16 @@ namespace Exporter.Models.UnitOfWork
                 if (sqlQueryParameterRepository == null)
                     sqlQueryParameterRepository = new SqlQueryParameterRepository(db);
                 return sqlQueryParameterRepository;
+            }
+        }
+
+        public OutputTableRepository OutputTables
+        {
+            get
+            {
+                if (outputTableRepository == null)
+                    outputTableRepository = new OutputTableRepository(db);
+                return outputTableRepository;
             }
         }
 

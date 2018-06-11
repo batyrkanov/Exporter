@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace Exporter.Models.Entities
 {
@@ -25,5 +23,6 @@ namespace Exporter.Models.Entities
         public DateTime SqlQueryCreatedDate { get; set; }
 
         public virtual ICollection<SqlQueryParameter> SqlQueryParameters { get; set; }
+        public virtual OutputTable OutputTable { get; set; }
     }
 }

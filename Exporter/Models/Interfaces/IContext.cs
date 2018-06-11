@@ -8,6 +8,7 @@ namespace Exporter.Models.Interfaces
         IDbSet<Parameter> Parameters { get; }
         IDbSet<SqlQuery> SqlQueries { get; }
         IDbSet<SqlQueryParameter> SqlQueryParameters { get; }
+        IDbSet<OutputTable> OutputTables { get; }
 
         void SetModified(object entity);
         void Save();
