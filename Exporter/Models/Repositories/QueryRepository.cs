@@ -125,11 +125,10 @@ namespace Exporter.Models.Repositories
 
         private void RemoveParametersRelationsFromQuery(int queryId)
         {
-            db.SqlQueryParameters
-                .RemoveRange(
-                    db.SqlQueryParameters
-                    .Where(q => q.SqlQueryId == queryId)
-                );
+            IEnumerable<SqlQueryParameter> list = db
+                .SqlQueryParameters
+                .Where(q => q.SqlQueryId == queryId);
+            this.RemoveSqlQueryParametersRange(list);
         }
 
         private void RemoveQueryParameters(int queryId)
@@ -142,10 +141,32 @@ namespace Exporter.Models.Repositories
             RemoveParametersRelationsFromQuery(queryId);
 
             if (queryParameterIds != null && !(queryParameterIds.Count <= 0))
-                db.Parameters.RemoveRange(
-                        db.Parameters
-                        .Where(p => queryParameterIds.Contains(p.ParameterId))
-                        );
+            {
+                IEnumerable<Parameter> parameters = db
+                    .Parameters
+                    .Where(p => queryParameterIds.Contains(p.ParameterId));
+                this.RemoveParameterRange(parameters);
+            }
+        }
+
+        private void RemoveSqlQueryParametersRange(IEnumerable<SqlQueryParameter> queries)
+        {
+            for (int i = queries.Count() - 1; i >= 0; i--)
+            {
+                SqlQueryParameter query = queries.ElementAt(i);
+                if (db.SqlQueryParameters.Contains(query))
+                    db.SqlQueryParameters.Remove(query);
+            }
+        }
+
+        private void RemoveParameterRange(IEnumerable<Parameter> parameters)
+        {
+            for (int i = parameters.Count() - 1; i >= 0; i--)
+            {
+                Parameter parameter = parameters.ElementAt(i);
+                if (db.Parameters.Contains(parameter))
+                    db.Parameters.Remove(parameter);
+            }
         }
 
         private void BindQueryAndParams(int queryId, string[] parameters)
