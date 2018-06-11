@@ -59,7 +59,9 @@ namespace Exporter.Services
                     query,
                     "union all",
                     RegexOptions.IgnoreCase
-                ).ToList();
+                )
+                .Select(q => q.Trim())
+                .ToList();
         }
 
         protected void AddParametersToQuery(ref DbCommand command, string query, Dictionary<string, string> queryParameters)
