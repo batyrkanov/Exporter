@@ -39,14 +39,12 @@ namespace Exporter.Models.Contexts
             // base.OnModelCreating(modelBuilder);
             builder.Entity<Parameter>().HasKey(q => q.ParameterId);
             builder.Entity<SqlQuery>().HasKey(q => q.SqlQueryId);
+            builder.Entity<OutputTable>().HasKey(t => t.OutputTableId);
             builder.Entity<SqlQueryParameter>().HasKey(q =>
                 new {
                     q.ParameterId,
                     q.SqlQueryId
                 });
-            builder.Entity<OutputTable>().HasKey(t =>
-                new { t.Id, t.QueryId }
-            );
 
             // Relationships
             builder.Entity<SqlQueryParameter>()
@@ -58,7 +56,6 @@ namespace Exporter.Models.Contexts
                 .HasRequired(t => t.SqlQuery)
                 .WithMany(t => t.SqlQueryParameters)
                 .HasForeignKey(t => t.SqlQueryId);
-            
         }
     }
 }

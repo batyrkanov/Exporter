@@ -3,7 +3,7 @@ namespace Exporter.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class EditsSign : DbMigration
+    public partial class edits : DbMigration
     {
         public override void Up()
         {

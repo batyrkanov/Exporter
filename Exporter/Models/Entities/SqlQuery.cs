@@ -15,7 +15,6 @@ namespace Exporter.Models.Entities
 
         [Display(Name = "Запрос")]
         [DataType(DataType.MultilineText)]
-        //[StringLength(100000, ErrorMessage = "Длина строки не должна превышать 100000 символов")]
         [Required(ErrorMessage = "Заполните поле!")]
         public string SqlQueryContent { get; set; }
 
@@ -23,6 +22,6 @@ namespace Exporter.Models.Entities
         public DateTime SqlQueryCreatedDate { get; set; }
 
         public virtual ICollection<SqlQueryParameter> SqlQueryParameters { get; set; }
-        public virtual OutputTable OutputTable { get; set; }
+        public virtual ICollection<OutputTable> OutputTables { get; set; }
     }
 }

@@ -123,6 +123,11 @@ namespace Exporter.Models.Repositories
                 .OrderByDescending(q => q.SqlQueryName);
         }
 
+        public string GetQueryNameById(int id)
+        {
+            return db.SqlQueries.Find(id).SqlQueryName;
+        }
+
         private void RemoveParametersRelationsFromQuery(int queryId)
         {
             IEnumerable<SqlQueryParameter> list = db

@@ -208,29 +208,17 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802220406013_InitialCreate.cs" />
-    <Compile Include="Migrations\201802220406013_InitialCreate.Designer.cs">
-      <DependentUpon>201802220406013_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201806130535051_create_output_table.cs" />
+    <Compile Include="Migrations\201806130535051_create_output_table.Designer.cs">
+      <DependentUpon>201806130535051_create_output_table.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802260345258_ExporterDB.cs" />
-    <Compile Include="Migrations\201802260345258_ExporterDB.Designer.cs">
-      <DependentUpon>201802260345258_ExporterDB.cs</DependentUpon>
+    <Compile Include="Migrations\201806130821030_sqlquery_entity_edits.cs" />
+    <Compile Include="Migrations\201806130821030_sqlquery_entity_edits.Designer.cs">
+      <DependentUpon>201806130821030_sqlquery_entity_edits.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802270445144_Edits.cs" />
-    <Compile Include="Migrations\201802270445144_Edits.Designer.cs">
-      <DependentUpon>201802270445144_Edits.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201802270448145_EditsSign.cs" />
-    <Compile Include="Migrations\201802270448145_EditsSign.Designer.cs">
-      <DependentUpon>201802270448145_EditsSign.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803060823222_Type.cs" />
-    <Compile Include="Migrations\201803060823222_Type.Designer.cs">
-      <DependentUpon>201803060823222_Type.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803060839151_Deleted types.cs" />
-    <Compile Include="Migrations\201803060839151_Deleted types.Designer.cs">
-      <DependentUpon>201803060839151_Deleted types.cs</DependentUpon>
+    <Compile Include="Migrations\201806130915526_edits.cs" />
+    <Compile Include="Migrations\201806130915526_edits.Designer.cs">
+      <DependentUpon>201806130915526_edits.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entities\OutputTable.cs" />
@@ -895,26 +883,7 @@
     <Content Include="Views\Parameter\Details.cshtml" />
     <Content Include="Views\Parameter\CreateForm.cshtml" />
     <Content Include="Views\Parameter\EditParameter.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201802220406013_InitialCreate.resx">
-      <DependentUpon>201802220406013_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802260345258_ExporterDB.resx">
-      <DependentUpon>201802260345258_ExporterDB.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802270445144_Edits.resx">
-      <DependentUpon>201802270445144_Edits.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802270448145_EditsSign.resx">
-      <DependentUpon>201802270448145_EditsSign.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803060823222_Type.resx">
-      <DependentUpon>201803060823222_Type.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803060839151_Deleted types.resx">
-      <DependentUpon>201803060839151_Deleted types.cs</DependentUpon>
-    </EmbeddedResource>
+    <Content Include="Views\Query\OutputTables.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -964,6 +933,17 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201806130535051_create_output_table.resx">
+      <DependentUpon>201806130535051_create_output_table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806130821030_sqlquery_entity_edits.resx">
+      <DependentUpon>201806130821030_sqlquery_entity_edits.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806130915526_edits.resx">
+      <DependentUpon>201806130915526_edits.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

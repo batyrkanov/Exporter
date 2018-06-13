@@ -54,8 +54,23 @@ namespace Exporter.Controllers
                 .GetQueryParametersByQueryId(id)
                 .AsQueryable();
 
+            string queryName = unitOfWork
+                .SqlQueries
+                .GetQueryNameById(id);
+
+            OutputTable lastFormedOutputXlsFile = unitOfWork
+                .OutputTables
+                .GetQueryOutputTableByIdAndType(id, "xls");
+            OutputTable lastFormedOutputCsvFile = unitOfWork
+                .OutputTables
+                .GetQueryOutputTableByIdAndType(id, "csv");
+
             ViewBag.Parameters = parameters;
             ViewBag.QueryId = id;
+            ViewBag.QueryName = queryName;
+
+            ViewBag.XlsFile = lastFormedOutputXlsFile;
+            ViewBag.CsvFile = lastFormedOutputCsvFile;
 
             return View();
         }

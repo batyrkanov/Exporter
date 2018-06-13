@@ -8,6 +8,5 @@
 
         public virtual SqlQuery SqlQuery { get; set; }
         public virtual Parameter Parameter { get; set; }
-
     }
 }

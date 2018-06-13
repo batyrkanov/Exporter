@@ -6,14 +6,14 @@ namespace Exporter.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class ExporterDB : IMigrationMetadata
+    [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
+    public sealed partial class sqlquery_entity_edits : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ExporterDB));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(sqlquery_entity_edits));
         
         string IMigrationMetadata.Id
         {
-            get { return "201802260345258_ExporterDB"; }
+            get { return "201806130821030_sqlquery_entity_edits"; }
         }
         
         string IMigrationMetadata.Source

@@ -7,13 +7,13 @@ namespace Exporter.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Deletedtypes : IMigrationMetadata
+    public sealed partial class create_output_table : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Deletedtypes));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(create_output_table));
         
         string IMigrationMetadata.Id
         {
-            get { return "201803060839151_Deleted types"; }
+            get { return "201806130535051_create_output_table"; }
         }
         
         string IMigrationMetadata.Source

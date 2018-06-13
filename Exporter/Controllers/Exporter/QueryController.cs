@@ -195,7 +195,21 @@ namespace Exporter.Controllers.Exporter
             return Json(new { fileName = xlsFormer.FileName, errorMessage = "Ошибка. Не удалось сформировать файл. Попытайтесь позже." });
         }
 
-        [DeleteFileAttribute]
+        public ActionResult OutputTables(int id)
+        {
+            OutputTable lastFormedOutputXlsFile = unitOfWork
+                .OutputTables
+                .GetQueryOutputTableByIdAndType(id, "xls");
+            OutputTable lastFormedOutputCsvFile = unitOfWork
+                .OutputTables
+                .GetQueryOutputTableByIdAndType(id, "csv");
+
+            ViewBag.XlsFile = lastFormedOutputXlsFile;
+            ViewBag.CsvFile = lastFormedOutputCsvFile;
+
+            return View();
+        }
+
         [AllowAnonymous]
         public ActionResult GetFile(string file, string type)
         {
@@ -204,6 +218,15 @@ namespace Exporter.Controllers.Exporter
                 return File(filepath, "text/csv", file);
             else
                 return File(filepath, "application/vnd.ms-excel", file);
+        }
+
+        public ActionResult DeleteFile(string file, string type)
+        {
+            string filepath = Path.Combine(Server.MapPath("~/Files"), file);
+
+            unitOfWork.OutputTables.RemoveOutputTableByFileNameAndType(file, type);
+
+            return Redirect(Request.UrlReferrer.ToString());
         }
     }
 }

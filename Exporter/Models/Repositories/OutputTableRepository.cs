@@ -18,7 +18,7 @@ namespace Exporter.Models.Repositories
 
         public IEnumerable<OutputTable> GetAll()
         {
-            return db.OutputTables.Include(q => q.SqlQuery);
+            return db.OutputTables;
         }
 
         public OutputTable Get(int id)
@@ -47,15 +47,15 @@ namespace Exporter.Models.Repositories
         {
             OutputTable outputTable = db
                 .OutputTables
-                .Where(t => t.QueryId == queryId && t.FileType == type)
-                .First();
+                .Where(t => t.SqlQueryId == queryId && t.FileType == type)
+                .FirstOrDefault();
 
             if (outputTable != null)
             {
                 string filepath = Path
                     .Combine(
                     HostingEnvironment.MapPath("~/Files"),
-                    outputTable.TableFileName
+                    outputTable.FileName
                     );
 
                 if (File.Exists(filepath))
@@ -71,12 +71,12 @@ namespace Exporter.Models.Repositories
             {
                 OutputTable outputTable = db
                     .OutputTables
-                    .Where(t => t.QueryId == queryId && t.FileType == type)
-                    .First();
+                    .Where(t => t.SqlQueryId == queryId && t.FileType == type)
+                    .FirstOrDefault();
 
                 if (outputTable != null)
                 {
-                    outputTable.TableFileName = filename;
+                    outputTable.FileName = filename;
                     outputTable.UpdatedAt = DateTime.Now;
                     db.SetModified(outputTable);
                 }
@@ -84,14 +84,51 @@ namespace Exporter.Models.Repositories
                 {
                     OutputTable newOutputTable = new OutputTable()
                     {
-                        TableName = query.SqlQueryName,
-                        TableFileName = filename,
+                        Name = query.SqlQueryName,
+                        FileName = filename,
                         FileType = type,
-                        QueryId = queryId,
+                        SqlQueryId = queryId,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now
                     };
+                    db.OutputTables.Add(newOutputTable);
                 }
+                db.Save();
+            }
+        }
+
+        public OutputTable GetQueryOutputTableByIdAndType(int queryId, string type)
+        {
+            OutputTable outputTable = db
+                .OutputTables
+                .Where(t => t.SqlQueryId == queryId && t.FileType == type)
+                .FirstOrDefault();
+
+            return outputTable;
+        }
+
+        public void RemoveOutputTableByFileNameAndType(string fileName, string type)
+        {
+            OutputTable outputTable = db
+                .OutputTables
+                .Where(t => t.FileName == fileName && t.FileType == type)
+                .FirstOrDefault();
+
+            if (outputTable != null)
+            {
+                string filePath = Path
+                    .Combine(
+                        HostingEnvironment.MapPath("~/Files"),
+                        fileName
+                    );
+
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+
+                db
+                    .OutputTables
+                    .Remove(outputTable);
+                db.Save();
             }
         }
     }

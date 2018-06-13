@@ -452,6 +452,83 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
         }
 
         [TestMethod]
+        public void FindQueriesByNameOrderByName_Test()
+        {
+            // Arrange
+            TestDbSet<SqlQuery> dbSet = new TestDbSet<SqlQuery>()
+            {
+                new SqlQuery()
+                {
+                    SqlQueryId = 0,
+                    SqlQueryName = "Command sql",
+                    SqlQueryContent = "Simple sql command",
+                    SqlQueryCreatedDate = DateTime.Today.AddDays(-3)
+                },
+                new SqlQuery()
+                {
+                    SqlQueryId = 1,
+                    SqlQueryName = "Big query sql",
+                    SqlQueryContent = "Huge sql query",
+                    SqlQueryCreatedDate = DateTime.Today.AddDays(-2)
+                },
+                new SqlQuery()
+                {
+                    SqlQueryId = 2,
+                    SqlQueryName = "A first query",
+                    SqlQueryContent = "first query in set",
+                    SqlQueryCreatedDate = DateTime.Today
+                }
+            };
+
+            int QueriesWithSqlWordInName = dbSet
+                .Where(q => q.SqlQueryName.Contains("sql"))
+                .Count();
+            IEnumerable<SqlQuery> queries = dbSet
+                .Where(q => q.SqlQueryName.Contains("sql"))
+                .Select(i => i)
+                .OrderBy(q => q.SqlQueryName);
+
+            Mock<IContext> mock = new Mock<IContext>();
+            mock
+                .Setup(q => q.SqlQueries)
+                .Returns(dbSet);
+
+            QueryRepository repository = new QueryRepository(mock.Object);
+
+            // Act
+            IEnumerable<SqlQuery> orderedQueries = repository
+                .FindQueriesByNameOrderByName("sql");
+
+            // Assert
+            Assert.AreEqual(QueriesWithSqlWordInName, orderedQueries.Count());
+            Assert.AreEqual(
+                queries.ToList().First().SqlQueryName,
+                orderedQueries.ToList().First().SqlQueryName
+            );
+            Assert.AreEqual(
+                queries.ToList().Last().SqlQueryId,
+                orderedQueries.ToList().Last().SqlQueryId
+            );
+        }
+
+        [TestMethod]
+        public void GetQueriesById_Test()
+        {
+            // Arrange
+            int queriesWithId1Count = queriesDbSet
+                .Where(q => q.SqlQueryId == 1)
+                .Count();
+            int queriesCountBeforeAct = queriesDbSet.Count();
+
+            // Act
+            IEnumerable<SqlQuery> queries = queryRepo.GetQueriesById(1);
+
+            // Assert
+            Assert.AreEqual(queriesWithId1Count, queries.Count());
+            Assert.AreEqual(queriesCountBeforeAct, queriesDbSet.Count());
+        }
+
+        [TestMethod]
         public void GetQueriesFromListByName_Test()
         {
             // Arrange
@@ -528,6 +605,23 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
                 unorderedQueries.Count(),
                 orderedQueries.Count()
             );
+        }
+
+        [TestMethod]
+        public void GetQueryNameById_Test()
+        {
+            // Arrange
+            int queriesCountBeforeAct = queriesDbSet.Count();
+
+            int id = queriesDbSet.First().SqlQueryId;
+            string queryName = queriesDbSet.Find(id).SqlQueryName;
+
+            // Act
+            string resultName = queryRepo.GetQueryNameById(id);
+
+            // Arrange
+            Assert.AreEqual(queriesCountBeforeAct, queriesDbSet.Count());
+            Assert.AreEqual(queryName, resultName);
         }
     }
 }

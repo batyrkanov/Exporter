@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models.Tests\Entities.Tests\TestDbSet.cs" />
+    <Compile Include="Models.Tests\Repositories.Tests\OutputTableRepository_Tests.cs" />
     <Compile Include="Models.Tests\Repositories.Tests\ParameterRepository_Tests.cs" />
     <Compile Include="Models.Tests\Repositories.Tests\QueryRepository_Tests.cs" />
     <Compile Include="Models.Tests\Repositories.Tests\SlqQueryParameterRepository_Tests.cs" />

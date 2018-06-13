@@ -70,6 +70,7 @@ function userExec() {
 }
 
 function GetCsv() {
+    document.getElementById("saveCsvBtn").disabled = true;
     var formData = new FormData();
 
     var queryId = $("#SqlQueryId").val();
@@ -98,6 +99,7 @@ function GetCsv() {
             } else if (data.errorMessage != null && data.errorMessage != "") {
                 errorCase(null, "error", data.errorMessage);
             }
+            document.getElementById("saveCsvBtn").disabled = false;
         },
         error: function (XMLHttpRequest) {
             errorCase(XMLHttpRequest);
@@ -110,6 +112,7 @@ function GetCsv() {
 }
 
 function GetExcel() {
+    document.getElementById("saveXlsBtn").disabled = true;
     var formData = new FormData();
 
     var file = $("#file")[0].files[0];
@@ -141,6 +144,7 @@ function GetExcel() {
             } else if (data.errorMessage != null && data.errorMessage != "") {
                 errorCase(null, "error", data.errorMessage);
             }
+            document.getElementById("saveXlsBtn").disabled = false;
         },
         error: function (XMLHttpRequest) {
             errorCase(XMLHttpRequest)
