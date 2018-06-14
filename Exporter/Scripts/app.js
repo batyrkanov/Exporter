@@ -85,7 +85,9 @@ function GetCsv() {
 
     formData.append('queryId', queryId);
     if (typeof parameters !== 'undefined' && parameters.length > 0) {
-        formData.append('parameters', parameters);
+        for (var i = 0; i < parameters.length; i++) {
+            formData.append('parameters[]', parameters[i]);
+        }
     }
 
     $.ajax({
@@ -126,11 +128,14 @@ function GetExcel() {
         parameters.push(name + "-xyz-" + value);
     });
 
+
     formData.append('xlsFile', file);
     formData.append('queryId', queryId);
 
     if (typeof parameters !== 'undefined' && parameters.length > 0) {
-        formData.append('parameters', parameters);
+        for (var i = 0; i < parameters.length; i++) {
+            formData.append('parameters[]', parameters[i]);
+        }
     }
 
     $.ajax({

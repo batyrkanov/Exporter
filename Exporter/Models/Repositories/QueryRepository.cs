@@ -154,23 +154,27 @@ namespace Exporter.Models.Repositories
             }
         }
 
-        private void RemoveSqlQueryParametersRange(IEnumerable<SqlQueryParameter> queries)
+        private void RemoveSqlQueryParametersRange(IEnumerable<SqlQueryParameter> queryParameters)
         {
-            for (int i = queries.Count() - 1; i >= 0; i--)
+            List<SqlQueryParameter> qParams = queryParameters.ToList();
+            SqlQueryParameter queryParameter;
+            for (int i = 0; i < qParams.Count(); i++)
             {
-                SqlQueryParameter query = queries.ElementAt(i);
-                if (db.SqlQueryParameters.Contains(query))
-                    db.SqlQueryParameters.Remove(query);
+                queryParameter = db.SqlQueryParameters.Find(qParams[i].SqlQueryParameterId);
+                if (queryParameter != null)
+                    db.SqlQueryParameters.Remove(qParams[i]);
             }
         }
 
         private void RemoveParameterRange(IEnumerable<Parameter> parameters)
         {
-            for (int i = parameters.Count() - 1; i >= 0; i--)
+            List<Parameter> paramsList = parameters.ToList();
+            Parameter param;
+            for (int i = 0; i < paramsList.Count(); i++)
             {
-                Parameter parameter = parameters.ElementAt(i);
-                if (db.Parameters.Contains(parameter))
-                    db.Parameters.Remove(parameter);
+                param = db.Parameters.Find(paramsList[i].ParameterId);
+                if (param != null)
+                    db.Parameters.Remove(paramsList[i]);
             }
         }
 

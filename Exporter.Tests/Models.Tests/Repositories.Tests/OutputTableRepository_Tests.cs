@@ -285,5 +285,41 @@ namespace Exporter.Tests.Models.Tests.Repositories.Tests
                 tablesDbSet.Last().UpdatedAt > DateTime.Today
             );
         }
+
+        [TestMethod]
+        public void GetQueryOutputTableByIdAndType_Test()
+        {
+            // Arrange
+            int queryId = 0;
+            int newId = tablesDbSet.Last().OutputTableId + 1;
+            string type = "xls";
+            string newName = "New table";
+            string newFileName = "newTableRandomFileName.xls";
+
+            OutputTable newOutputTable = new OutputTable()
+            {
+                OutputTableId = newId,
+                Name = newName,
+                FileName = newFileName,
+                FileType = type,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                SqlQueryId = queryId
+            };
+            outRepo.Create(newOutputTable);
+
+            // Act
+            OutputTable outputTable = outRepo.GetQueryOutputTableByIdAndType(queryId, type);
+
+            // Assert
+            Assert.AreEqual(outputTable.OutputTableId, newId);
+            Assert.AreEqual(outputTable.FileType, type);
+            Assert.AreEqual(outputTable.Name, newName);
+            Assert.AreEqual(outputTable.FileName, newFileName);
+            Assert.IsTrue(
+                DateTime.Today < outputTable.CreatedAt &&
+                DateTime.Today < outputTable.UpdatedAt
+            );
+        }
     }
 }

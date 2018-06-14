@@ -40,22 +40,21 @@ namespace Exporter.Models.Contexts
             builder.Entity<Parameter>().HasKey(q => q.ParameterId);
             builder.Entity<SqlQuery>().HasKey(q => q.SqlQueryId);
             builder.Entity<OutputTable>().HasKey(t => t.OutputTableId);
-            builder.Entity<SqlQueryParameter>().HasKey(q =>
-                new {
-                    q.ParameterId,
-                    q.SqlQueryId
-                });
+            builder.Entity<SqlQueryParameter>().HasKey(q => q.SqlQueryParameterId);
+            builder.Entity<SqlQueryParameter>()
+                .Property(q => q.SqlQueryParameterId)
+                .HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
 
             // Relationships
             builder.Entity<SqlQueryParameter>()
                 .HasRequired(t => t.Parameter)
                 .WithMany(t => t.SqlQueriesParameters)
-                .HasForeignKey(t => t.ParameterId);
+                .HasForeignKey<int>(t => t.ParameterId);
 
             builder.Entity<SqlQueryParameter>()
                 .HasRequired(t => t.SqlQuery)
                 .WithMany(t => t.SqlQueryParameters)
-                .HasForeignKey(t => t.SqlQueryId);
+                .HasForeignKey<int>(t => t.SqlQueryId);
         }
     }
 }

@@ -220,6 +220,10 @@
     <Compile Include="Migrations\201806130915526_edits.Designer.cs">
       <DependentUpon>201806130915526_edits.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806140506573_create_table.cs" />
+    <Compile Include="Migrations\201806140506573_create_table.Designer.cs">
+      <DependentUpon>201806140506573_create_table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entities\OutputTable.cs" />
     <Compile Include="Models\Interfaces\IContext.cs" />
@@ -943,6 +947,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806130915526_edits.resx">
       <DependentUpon>201806130915526_edits.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806140506573_create_table.resx">
+      <DependentUpon>201806140506573_create_table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
