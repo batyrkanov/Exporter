@@ -1,19 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Data.Entity;
 using Exporter.Models.Entities;
-using PagedList.Mvc;
 using PagedList;
 using Exporter.Models;
+
+using Exporter.Models.Interfaces;
+using Exporter.Models.UnitOfWork;
+using Const = Exporter.Constants;
+
 namespace Exporter.Controllers
 {
     public class HomeController : Controller
     {
-        SqlQueryParameterContext db = new SqlQueryParameterContext();
         ServerDbContext server = new ServerDbContext();
+
+        IUnitOfWork unitOfWork;
+        public HomeController()
+        {
+            this.unitOfWork = new UnitOfWork();
+        }
+        public HomeController(IUnitOfWork unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
 
         [Authorize(Roles = "admin")]
         public ActionResult Index()
@@ -21,30 +32,45 @@ namespace Exporter.Controllers
             return View();
         }
 
-
         [AllowAnonymous]
         public ActionResult Queries(int? page, string searching)
         {
-            int pageSize = 10;
+            int pageSize = Const.Constant.NumberOfQueriesPerPage;
             int pageNumber = (page ?? 1);
 
-            IPagedList<SqlQuery> queries = db.SqlQueries.OrderBy(q => q.SqlQueryName).Where(x=>x.SqlQueryName.Contains(searching) || searching == null).ToPagedList(pageNumber, pageSize);
+            IPagedList<SqlQuery> queries = unitOfWork
+                .SqlQueries
+                .FindQueriesByNameOrderByName(searching)
+                .ToPagedList(pageNumber, pageSize);
 
             return View(queries);
         }
 
         [AllowAnonymous]
-        public ActionResult Unloading(int? id)
+        public ActionResult Unloading(int id)
         {
-            if (id == null)
-                return HttpNotFound();
+            IQueryable<Parameter> parameters = unitOfWork
+                .Parameters
+                .GetQueryParametersByQueryId(id)
+                .AsQueryable();
 
-            List<int> ids = db.SqlQueriesParameters.Where(s => s.SqlQueryId == id).Select(i => i.ParameterId).ToList();
-            IQueryable<Parameter> parameters = db.Parameters.Where(p => ids.Contains(p.ParameterId));
-            string query = db.SqlQueries.Find(id).SqlQueryContent;
+            string queryName = unitOfWork
+                .SqlQueries
+                .GetQueryNameById(id);
+
+            OutputTable lastFormedOutputXlsFile = unitOfWork
+                .OutputTables
+                .GetQueryOutputTableByIdAndType(id, "xls");
+            OutputTable lastFormedOutputCsvFile = unitOfWork
+                .OutputTables
+                .GetQueryOutputTableByIdAndType(id, "csv");
 
             ViewBag.Parameters = parameters;
-            ViewBag.Query = query;
+            ViewBag.QueryId = id;
+            ViewBag.QueryName = queryName;
+
+            ViewBag.XlsFile = lastFormedOutputXlsFile;
+            ViewBag.CsvFile = lastFormedOutputCsvFile;
 
             return View();
         }
@@ -79,20 +105,28 @@ namespace Exporter.Controllers
 
             ViewBag.CurrentFilter = searchString;
             //Linq code that gets data from the database
-            var message = (from query in db.SqlQueries
-                           where query.SqlQueryId == testID
-                           select query);
+            List<SqlQuery> queries = unitOfWork
+                .SqlQueries
+                .GetQueriesById(testID)
+                .ToList();
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                message = message.Where(s => s.SqlQueryName.Contains(searchString));
+                queries = unitOfWork
+                    .SqlQueries
+                    .GetQueriesFromListByName(queries, searchString)
+                    .ToList();
             }
 
             //PageSize displays the maximum number of rows on each page
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
-            return PartialView("QuerySearch", message.OrderByDescending(i => i.SqlQueryName).ToPagedList(pageNumber, pageSize));
+            queries = unitOfWork
+                .SqlQueries
+                .OrderQueryByNameDesc(queries).ToList();
+
+            return PartialView("QuerySearch", queries.ToPagedList(pageNumber, pageSize));
         }
     }
 }
