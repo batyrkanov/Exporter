@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Выходные таблицы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Выходные таблицы</h2>
+<div class="row">
+    <table class="table">
+    <tr>
+        <th>Наименование</th>
+        <th>Дата формирования</th>
+        <th>Формат</th>
+        <th>Действяи</th>
+    </tr>
+    @if (ViewBag.XlsFile == null || ViewBag.CsvFile == null)
+    {
+    <p>Файлов нет</p>
+    }
+     @if (ViewBag.XlsFile != null)
+     {
+     <tr>
+         <td>@ViewBag.XlsFile.Name</td>
+         <td>@ViewBag.XlsFile.UpdatedAt</td>
+         <td>@ViewBag.XlsFile.FileType</td>
+         <td>
+             <a class="btn btn-primary" href="@Url.Action("GetFile", "Query", new { file = ViewBag.XlsFile.FileName, type = ViewBag.XlsFile.FileType })">Скачать</a>
+             <a class="btn btn-danger" href="@Url.Action("DeleteFile", "Query", new { file = ViewBag.XlsFile.FileName, type = ViewBag.XlsFile.FileType })">Удалить</a>
+         </td>
+     </tr>
+     }
+     @if (ViewBag.CsvFile != null)
+     {
+     <tr>
+         <td>@ViewBag.CsvFile.Name</td>
+         <td>@ViewBag.CsvFile.UpdatedAt</td>
+         <td>@ViewBag.CsvFile.FileType</td>
+         <td>
+             <a class="btn btn-primary" href="@Url.Action("GetFile", "Query", new { file = ViewBag.CsvFile.FileName, type = ViewBag.CsvFile.FileType })">Скачать</a>
+             <a class="btn btn-danger" href="@Url.Action("DeleteFile", "Query", new { file = ViewBag.CsvFile.FileName, type = ViewBag.CsvFile.FileType })">Удалить</a>
+         </td>
+     </tr>
+     }
+</table>
+</div>

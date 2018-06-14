@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace Exporter.Models.Entities
 {
@@ -17,13 +15,13 @@ namespace Exporter.Models.Entities
 
         [Display(Name = "Запрос")]
         [DataType(DataType.MultilineText)]
-        //[StringLength(100000, ErrorMessage = "Длина строки не должна превышать 100000 символов")]
         [Required(ErrorMessage = "Заполните поле!")]
         public string SqlQueryContent { get; set; }
 
         [Display(Name = "Дата создания запроса")]
         public DateTime SqlQueryCreatedDate { get; set; }
 
-        public virtual ICollection<SqlQueryParameter> SqlQueriesParameters { get; set; }
+        public virtual ICollection<SqlQueryParameter> SqlQueryParameters { get; set; }
+        public virtual ICollection<OutputTable> OutputTables { get; set; }
     }
 }
