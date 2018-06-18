@@ -4,57 +4,59 @@
     ViewBag.Title = "Подробнее";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="al-xz-custom-page">
 
-<h2>Подробнее</h2>
+    <h2>Подробнее</h2>
 
-<div>
-    <h4>Параметр</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.ParameterName)
-        </dt>
+    <div>
+        <h4>Параметр</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ParameterName)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ParameterName)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ParameterName)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ParameterRuName)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.ParameterRuName)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ParameterRuName)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ParameterRuName)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ParameterType)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.ParameterType)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ParameterType)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ParameterType)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ParameterCreatedDate)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.ParameterCreatedDate)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ParameterCreatedDate)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ParameterCreatedDate)
+            </dd>
 
-    </dl>
+        </dl>
+    </div>
+    @if (!(ViewBag.Queries.Count <= 0))
+    {
+        <p><b>Данный параметр используется в следующих запросах:</b></p>
+        <ol>
+            @foreach (Exporter.Models.Entities.SqlQuery query in ViewBag.Queries)
+            {
+                <li>@query.SqlQueryName</li>
+            }
+        </ol>
+    }
+    <p>
+        <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Parameter")">Назад</a>
+    </p>
 </div>
-@if (!(ViewBag.Queries.Count <= 0))
-{
-    <p><b>Данный параметр используется в следующих запросах:</b></p>
-    <ol>
-        @foreach (Exporter.Models.Entities.SqlQuery query in ViewBag.Queries)
-        {
-            <li>@query.SqlQueryName</li>
-        }
-    </ol>
-}
-<p>
-    <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Parameter")">Назад</a>
-</p>

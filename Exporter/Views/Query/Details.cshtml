@@ -5,63 +5,63 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Подробнее</h2>
+<div class="al-xz-custom-page">
+    <div>
+        <h4>Запрос</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.SqlQueryName)
+            </dt>
 
-<div>
-    <h4>Запрос</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.SqlQueryName)
-        </dt>
+            <dd>
+                @Html.DisplayFor(model => model.SqlQueryName)
+            </dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.SqlQueryName)
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.SqlQueryContent)
+            </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.SqlQueryContent)
-        </dt>
+            <dd>
+                @Html.EditorFor(model => model.SqlQueryContent, new { htmlAttributes = new { @class = "SqlQueryContent", @style = "display: none;" } })
+            </dd>
 
-        <dd>
-            @Html.EditorFor(model => model.SqlQueryContent, new { htmlAttributes = new { @class = "SqlQueryContent", @style = "display: none;" } })
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.SqlQueryCreatedDate)
+            </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.SqlQueryCreatedDate)
-        </dt>
+            <dd>
+                @Html.DisplayFor(model => model.SqlQueryCreatedDate)
+            </dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.SqlQueryCreatedDate)
-        </dd>
-
-        @if (ViewBag.QueryParameters != null && !(ViewBag.QueryParameters.Count <= 0))
-        {
-        <dt>
-            Параметры
-        </dt>
-        <dd>
-            <span id="fields">
-                @foreach (Exporter.Models.Entities.Parameter parameter in ViewBag.QueryParameters)
-                {
-                    <div class="form-group">
-                        <label class="col-md-2 control-label" for="@parameter.ParameterName">@parameter.ParameterName</label>
-                        <div class="col-md-10">
-                            <input type="@parameter.ParameterType" name="@parameter.ParameterName" data-name="@parameter.ParameterName" class="form-control text-box single-line parameter" />
-                        </div>
-                    </div>
-                }
-            </span>
-        </dd>
-        }
-    </dl>
+            @if (ViewBag.QueryParameters != null && !(ViewBag.QueryParameters.Count <= 0))
+            {
+                <dt>
+                    Параметры
+                </dt>
+                <dd>
+                    <span id="fields">
+                        @foreach (Exporter.Models.Entities.Parameter parameter in ViewBag.QueryParameters)
+                        {
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="@parameter.ParameterName">@parameter.ParameterName</label>
+                                <div class="col-md-10">
+                                    <input type="@parameter.ParameterType" name="@parameter.ParameterName" data-name="@parameter.ParameterName" class="form-control text-box single-line parameter" />
+                                </div>
+                            </div>
+                        }
+                    </span>
+                </dd>
+            }
+        </dl>
+    </div>
+    <p>
+        @Html.AntiForgeryToken()
+        <button type="button" class="btn btn-info" onclick="execute()">Выполнить</button> |
+        <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Query")">Назад</a>
+    </p>
+    <span id="result"></span>
 </div>
-<p>
-    @Html.AntiForgeryToken()
-    <button type="button" class="btn btn-info" onclick="execute()">Выполнить</button> |
-    <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Query")">Назад</a>
-</p>
-<span id="result"></span>
 
 @section Scripts {
 

@@ -5,88 +5,94 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid">
-    <div id="se-pre-con" style="display:none;"></div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="header">
-                    <h2>SQL запросы</h2>
-                    <p>
-                        <a class="btn btn-default" name="createButton" id="createButton" href="@Url.Action("Create","Query")">Добавить новую запись</a> |
-                        <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Home")">Назад</a>
-                    </p>
-                </div>
-                <hr />
-                @using (Html.BeginForm("Index", "Query", FormMethod.Get))
-                {
-                    <div class="col-md-11 search-div" style="margin-bottom: 2%;">
-                        <input type="text" id="searching" name="searching" class="form-control search" placeholder="Введите наименование запроса" />
+<div class="al-xz-custom-page">
+    <div class="container-fluid">
+        <div id="se-pre-con" style="display:none;"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>SQL запросы</h2>
+                        <p>
+                            <a class="btn btn-default" name="createButton" id="createButton" href="@Url.Action("Create","Query")">Добавить новую запись</a> |
+                            <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Home")">Назад</a>
+                        </p>
                     </div>
-                    <div class="col-md-1">
-                        <button type="submit" class="btn btn-default default-btn">
-                            <i class="fa fa-search"></i>
-                            Поиск
-                        </button>
+                    <hr />
+                    @using (Html.BeginForm("Index", "Query", FormMethod.Get))
+                    {
+                        <div class="col-md-11 search-div" style="margin-bottom: 2%;">
+                            <input type="text" id="searching" name="searching" class="form-control search" placeholder="Введите наименование запроса" />
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-default default-btn">
+                                <i class="fa fa-search"></i>
+                                Поиск
+                            </button>
 
-                    </div>
-                }
-                <div class="content" id="accordion">
-                    <table class="table table-striped" id="listTable">
-                        <tr>
-                            <th class="col-md-4">
-                                @Html.DisplayNameFor(model => model.First().SqlQueryName)
-                            </th>
-                            <th class="col-md-4">
-                                @Html.DisplayNameFor(model => model.First().SqlQueryContent)
-                            </th>
-                            <th class="col-md-2">
-                                @Html.DisplayNameFor(model => model.First().SqlQueryCreatedDate)
-                            </th>
-                            <th style="text-align:center;">
-                                Действия
-                            </th>
-                        </tr>
-                        @if (Model.Count() == 0)
-                        {
-                            <tr>
-                                <td colspan="4">
-                                    Ничего не найдено
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            foreach (var item in Model)
+                        </div>
+                    }
+                    <div class="content" id="accordion">
+                        <table class="table al-xz-custom-table" id="listTable">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-4">
+                                        @Html.DisplayNameFor(model => model.First().SqlQueryName)
+                                    </th>
+                                    <th class="col-md-3">
+                                        @Html.DisplayNameFor(model => model.First().SqlQueryContent)
+                                    </th>
+                                    <th class="col-md-2">
+                                        @Html.DisplayNameFor(model => model.First().SqlQueryCreatedDate)
+                                    </th>
+                                    <th class="col-md-3" style="text-align:center;">
+                                        Действия
+                                    </th>
+                                </tr>
+                            </thead>
+                            @if (Model.Count() == 0)
                             {
                                 <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.SqlQueryName)
-                                    </td>
-                                    <td>
-                                        <div class="sql">
-                                            <code style="white-space: normal;">
-                                                @Html.Raw((item.SqlQueryContent.Length > 20 ? item.SqlQueryContent.Substring(0, 20) : item.SqlQueryContent))
-                                            </code>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.SqlQueryCreatedDate)
-                                    </td>
-                                    <td>
-                                        <div class="table-btn-group">
-                                            <a class="btn btn-default" name="editButton" id="editButton" href="@Url.Action("Edit", "Query", new { id = item.SqlQueryId })"><i class="fa fa-pencil" aria-hidden="true" title="Редактировать" data-toggle="tooltip" data-placement="top"></i></a>
-                                            <a class="btn btn-default" name="detailsButton" id="detailsButton" href="@Url.Action("Details", "Query", new { id = item.SqlQueryId })"><i class="fa fa-eye" aria-hidden="true" title="Просмотреть" data-toggle="tooltip" data-placement="top"></i></a>
-                                            <a class="btn btn-default" name="deleteButton" id="deleteButton" href="@Url.Action("Delete", "Query", new { id = item.SqlQueryId })"><i class="fa fa-trash" aria-hidden="true" title="Удалить" data-toggle="tooltip" data-placement="top"></i></a>
-                                            <a id="files" href="@Url.Action("OutputTables", "Query", new { id = item.SqlQueryId })" class="btn btn-default" name="files"><i class="fa fa-file-excel-o" aria-hidden="true" title="Файлы выходных таблиц" data-toggle="tooltip" data-placement="top"></i></a>
-                                        </div>
+                                    <td colspan="4">
+                                        Ничего не найдено
                                     </td>
                                 </tr>
                             }
-                        }
-                    </table>
-                    Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount
-                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                            else
+                            {
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SqlQueryName)
+                                        </td>
+                                        <td>
+                                            <div class="sql">
+                                                <code style="white-space: normal;">
+                                                    @Html.Raw((item.SqlQueryContent.Length > 20 ? item.SqlQueryContent.Substring(0, 20) : item.SqlQueryContent))
+                                                </code>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SqlQueryCreatedDate)
+                                        </td>
+                                        <td>
+                                            <div class="table-btn-group">
+                                                <a class="btn btn-default" name="editButton" id="editButton" href="@Url.Action("Edit", "Query", new { id = item.SqlQueryId })"><i class="fa fa-pencil" aria-hidden="true" title="Редактировать" data-toggle="tooltip" data-placement="top"></i></a>
+                                                <a class="btn btn-default" name="detailsButton" id="detailsButton" href="@Url.Action("Details", "Query", new { id = item.SqlQueryId })"><i class="fa fa-eye" aria-hidden="true" title="Просмотреть" data-toggle="tooltip" data-placement="top"></i></a>
+                                                <a class="btn btn-default" name="deleteButton" id="deleteButton" href="@Url.Action("Delete", "Query", new { id = item.SqlQueryId })"><i class="fa fa-trash" aria-hidden="true" title="Удалить" data-toggle="tooltip" data-placement="top"></i></a>
+                                                <a id="files" href="@Url.Action("OutputTables", "Query", new { id = item.SqlQueryId })" class="btn btn-default" name="files"><i class="fa fa-file-excel-o" aria-hidden="true" title="Файлы выходных таблиц" data-toggle="tooltip" data-placement="top"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            }
+                        </table>
+                        Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                    </div>
                 </div>
             </div>
         </div>
