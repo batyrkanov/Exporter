@@ -196,7 +196,6 @@ namespace Exporter.Controllers.Exporter
                     }
                 }
             }
-
         }
 
         [HttpPost]
@@ -275,7 +274,8 @@ namespace Exporter.Controllers.Exporter
                 System.IO.Stream fileContent = header.InputStream;
                 Console.WriteLine(fileContent);
             }
-            string query = ReplaceQuotes(input);
+            string query = ReplaceQuotes(input); // Split(query, 'uion all') => List<queries>
+ 
             using (ServerDbContext db = new ServerDbContext())
             {
                 using (var command = db.Database.Connection.CreateCommand())
