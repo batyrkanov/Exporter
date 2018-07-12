@@ -4,70 +4,72 @@
     ViewBag.Title = "Удаление";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div id="se-pre-con" style="display:none;"></div>
+<div class="al-xz-custom-page">
+    <div id="se-pre-con" style="display:none;"></div>
 
-<h2>Удаление</h2>
+    <h2>Удаление</h2>
 
-<div>
-    <h4>Параметр</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.ParameterName)
-        </dt>
+    <div>
+        <h4>Параметр</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ParameterName)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ParameterName)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ParameterName)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ParameterRuName)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.ParameterRuName)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ParameterRuName)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ParameterRuName)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ParameterType)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.ParameterType)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ParameterType)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ParameterType)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ParameterCreatedDate)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.ParameterCreatedDate)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ParameterCreatedDate)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ParameterCreatedDate)
+            </dd>
 
-    </dl>
-    <hr />
-    @if (ViewBag.Queries.Count <= 0)
-    {
-        using (Html.BeginForm("DeleteConfirmed", "Parameter", FormMethod.Post, new { enctype = "multipart/form-data", id = "create-form" }))
+        </dl>
+        <hr />
+        @if (ViewBag.Queries.Count <= 0)
         {
-            @Html.AntiForgeryToken()
-
-            <div class="form-actions no-color">
-                <input type="hidden" name="id" value="@Model.ParameterId" />
-                <input type="submit" value="Удалить" class="btn btn-default" /> |
-                <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Parameter")">Назад</a>
-            </div>
-        }
-    }
-    else
-    {
-        <p><b>Удаление невозможно. Данный параметр используется в следующих запросах:</b></p>
-        <ol>
-            @foreach (Exporter.Models.Entities.SqlQuery query in ViewBag.Queries)
+            using (Html.BeginForm("DeleteConfirmed", "Parameter", FormMethod.Post, new { enctype = "multipart/form-data", id = "create-form" }))
             {
-                <li>@query.SqlQueryName</li>
+                @Html.AntiForgeryToken()
+
+                <div class="form-actions no-color">
+                    <input type="hidden" name="id" value="@Model.ParameterId" />
+                    <input type="submit" value="Удалить" class="btn btn-default" /> |
+                    <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Parameter")">Назад</a>
+                </div>
             }
-        </ol>
-        <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Parameter")">Назад</a>
-    }
+        }
+        else
+        {
+            <p><b>Удаление невозможно. Данный параметр используется в следующих запросах:</b></p>
+            <ol>
+                @foreach (Exporter.Models.Entities.SqlQuery query in ViewBag.Queries)
+                {
+                    <li>@query.SqlQueryName</li>
+                }
+            </ol>
+            <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Parameter")">Назад</a>
+        }
+    </div>
 </div>

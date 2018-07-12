@@ -5,76 +5,79 @@
 
 @model PagedList.IPagedList<Exporter.Models.Entities.SqlQuery>
 @using PagedList.Mvc
-<br /><br />
-<h4>Запросы</h4>
-<hr />
-@using (Html.BeginForm("Queries", "Home", FormMethod.Get))
-{
-    <div class="col-md-11 search-div">
-        <input type="text" id="searching" name="searching" class="form-control search" placeholder="Введите наименование запроса" />
-    </div>
-    <div class="col-md-1">
-        <button type="submit" class="btn btn-default default-btn">
-            <i class="fa fa-search"></i>
-            Поиск
-        </button>
 
-    </div>
-}
+<div class="al-xz-custom-page">
+    <br /><br />
+    <h4>Выходные таблицы</h4>
+    <hr />
+    @using (Html.BeginForm("Queries", "Home", FormMethod.Get))
+    {
+        <div class="col-md-11 search-div">
+            <input type="text" id="searching" name="searching" class="form-control search" placeholder="Введите наименование запроса" />
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-default default-btn">
+                <i class="fa fa-search"></i>
+                Поиск
+            </button>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th class="col-md-4">
-                Наименование
-            </th>
-            <th class="col-md-4">
-                Запрос
-            </th>
-            <th class="col-md-4">
-                Создан
-            </th>
-            <th></th>
-        </tr>
-    </thead>
+        </div>
+    }
 
-    <tbody>
-        @if (Model.Count() == 0)
-        {
+    <table class="table al-xz-custom-table">
+        <thead>
             <tr>
-                <td>
-                    Ничего не найдено!
-                </td>               
+                <th class="col-md-4">
+                    Наименование
+                </th>
+                <th class="col-md-4">
+                    Запрос
+                </th>
+                <th class="col-md-4">
+                    Создан
+                </th>
+                <th></th>
             </tr>
-        }
-        else
-        {
-            foreach (var item in Model)
+        </thead>
+
+        <tbody>
+            @if (Model.Count() == 0)
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.SqlQueryName)
-                    </td>
-                    <td>
-                        <div class="sql">
-                            @*<code>*@
-                            @Html.Raw((item.SqlQueryContent.Length > 20 ? item.SqlQueryContent.Substring(0, 20) : item.SqlQueryContent))
-                            @*</code>*@
-                        </div>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SqlQueryCreatedDate)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Выбрать", "Unloading", new { id = item.SqlQueryId }, new { @class = "btn btn-default" })
+                        Ничего не найдено!
                     </td>
                 </tr>
             }
-        }
+            else
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("Unloading", "Home", new { id = item.SqlQueryId })" class="al-xz-custom-query-link">@Html.DisplayFor(modelItem => item.SqlQueryName)</a>
+                        </td>
+                        <td>
+                            <div class="sql">
+                                @*<code>*@
+                                @Html.Raw((item.SqlQueryContent.Length > 20 ? item.SqlQueryContent.Substring(0, 20) : item.SqlQueryContent))
+                                @*</code>*@
+                            </div>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SqlQueryCreatedDate)
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Unloading", "Home", new { id = item.SqlQueryId })"><i class="fa fa-chevron-circle-right fa-2x al-xz-custom-query-choose-icon" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                }
+            }
 
-    </tbody>
+        </tbody>
 
-</table>
-Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+    </table>
+    Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+</div>
 
