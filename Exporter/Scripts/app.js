@@ -70,7 +70,10 @@ function userExec() {
 }
 
 function GetCsv() {
-    var query = $("#SqlQueryContent").val();
+    document.getElementById("saveCsvBtn").disabled = true;
+    var formData = new FormData();
+
+    var queryId = $("#SqlQueryId").val();
     var parameters = [];
 
     $(".parameter").each(function () {
@@ -80,14 +83,17 @@ function GetCsv() {
         parameters.push(name + "-xyz-" + value);
     });
 
+    formData.append('queryId', queryId);
+    if (typeof parameters !== 'undefined' && parameters.length > 0) {
+        for (var i = 0; i < parameters.length; i++) {
+            formData.append('parameters[]', parameters[i]);
+        }
+    }
+
     $.ajax({
         url: "/Query/FormCsvFile",
         type: "POST",
-        data: {
-            "input": query,
-            "parameters": parameters
-        },
-        cache: false,
+        data: formData,
         dataType: "json",
         success: function (data) {
             if (data.fileName != "") {
@@ -95,17 +101,24 @@ function GetCsv() {
             } else if (data.errorMessage != null && data.errorMessage != "") {
                 errorCase(null, "error", data.errorMessage);
             }
+            document.getElementById("saveCsvBtn").disabled = false;
         },
         error: function (XMLHttpRequest) {
             errorCase(XMLHttpRequest);
-        }
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
     });
     return false;
 }
 
 function GetExcel() {
-    var file = $("#header")[0].files[0];
-    var query = $("#SqlQueryContent").val();
+    document.getElementById("saveXlsBtn").disabled = true;
+    var formData = new FormData();
+
+    var file = $("#file")[0].files[0];
+    var queryId = $("#SqlQueryId").val();
     var parameters = [];
 
     $(".parameter").each(function () {
@@ -115,28 +128,35 @@ function GetExcel() {
         parameters.push(name + "-xyz-" + value);
     });
 
+
+    formData.append('xlsFile', file);
+    formData.append('queryId', queryId);
+
+    if (typeof parameters !== 'undefined' && parameters.length > 0) {
+        for (var i = 0; i < parameters.length; i++) {
+            formData.append('parameters[]', parameters[i]);
+        }
+    }
+
     $.ajax({
         url: "/Query/FormExcelFile",
         dataType: "json",
         type: "POST",
-        data: {
-            "header": file,
-            "input": query,
-            "parameters": parameters
-        },
-        //processData: false,
-        //contentType: false,
-        cache: false,
+        data: formData,
         success: function (data) {
             if (data.fileName != "") {
                 window.location.href = "/Query/GetFile?file=" + data.fileName + "&type=excel";
             } else if (data.errorMessage != null && data.errorMessage != "") {
                 errorCase(null, "error", data.errorMessage);
             }
+            document.getElementById("saveXlsBtn").disabled = false;
         },
         error: function (XMLHttpRequest) {
             errorCase(XMLHttpRequest)
-        }
+        },
+        cache: false,
+        processData: false,
+        contentType: false,
     });
     return false;
 }
@@ -166,6 +186,11 @@ function createParam() {
     if ((name === null || name == "") || (ruName === null || ruName == "") || (type === null || type == "")) {
 
         alert("Заполните поля создания параметра");
+        return false;
+    }
+
+    if (!(/^@/.test(name))) {
+        alert("Наименование для замены должно начинаться с символа: @");
         return false;
     }
 
