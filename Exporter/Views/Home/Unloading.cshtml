@@ -2,11 +2,11 @@
     ViewBag.Title = "Выгрузка";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>Выгрузка</h2>
+<h2>Выгрузка: @ViewBag.QueryName</h2>
 <div class="row">
     <div class="form-group">
-        <label for="header">Шапка формы:</label>
-        <input type="file" name="header" id="header" class="form-control" />
+        <label for="header">Загрузите excel с шапкой выходной таблицы:</label>
+        <input type="file" name="file" id="file" class="form-control" />
     </div>
     @foreach (Exporter.Models.Entities.Parameter param in ViewBag.Parameters)
     {
@@ -17,17 +17,48 @@
             </div>
         </div>
     }
-    <input type="hidden" id="SqlQueryContent" name="query" value="@ViewBag.Query" />
+    <input type="hidden" id="SqlQueryId" name="query" value="@ViewBag.QueryId" />
 </div>
 <hr />
 @Html.AntiForgeryToken()
-<button type="button" class="btn btn-info" onclick="userExec()">Выполнить</button>
-<button type="button" class="btn btn-primary" onclick="GetCsv()">Сохранить в csv файл</button>
-@*<button type="button" class="btn btn-success" onclick="GetExcel()">Сохранить в xls файл</button>*@
-<a class="btn btn-success" href="@Url.Content("~/Files/6F.xlsx")" download>Сохранить в xls файл</a>
-    <a type="button" class="btn btn-danger" href="@Url.Action("Queries","Home")">Назад</a>
-    <span id="download"></span>
-    <span id="result"></span>
-    @section Scripts {
-        @Scripts.Render("~/Scripts/app.js")
+<!-- <button type="button" class="btn btn-info" onclick="userExec()">Выполнить</button> -->
+<button type="button" id="saveCsvBtn" class="btn btn-primary" onclick="GetCsv()">Сохранить в csv файл</button>
+<button type="button" id="saveXlsBtn" class="btn btn-success" onclick="GetExcel()">Сохранить в xls файл</button>
+
+<hr />
+
+<h4>Сформированные файлы</h4>
+<table class="table">
+    <tr>
+        <th>Наименование</th>
+        <th>Дата формирования</th>
+        <th>Формат</th>
+        <th>Действия</th>
+    </tr>
+    @if (ViewBag.XlsFile != null)
+    {
+        <tr>
+            <td><a class="btn btn-success" href="@Url.Action("GetFile", "Query", new { file = ViewBag.XlsFile.FileName, type = ViewBag.XlsFile.FileType })">@ViewBag.XlsFile.Name Excel</a></td>
+            <td>@ViewBag.XlsFile.UpdatedAt</td>
+            <td><span class="btn btn-success">@ViewBag.XlsFile.FileType</span></td>
+            <td><a href="@Url.Action("GetFile", "Query", new { file = ViewBag.XlsFile.FileName, type = ViewBag.XlsFile.FileType })">Скачать</a></td>
+        </tr>
     }
+    @if (ViewBag.CSvFile != null)
+    {
+        <tr>
+            <td><a class="btn btn-primary" href="@Url.Action("GetFile", "Query", new { file = ViewBag.CsvFile.FileName, type = ViewBag.CsvFile.FileType })">@ViewBag.CsvFile.Name Csv</a></td>
+            <td>@ViewBag.CsvFile.UpdatedAt</td>
+            <td><span class="btn btn-primary">@ViewBag.CsvFile.FileType</span></td>
+            <td><a href="@Url.Action("GetFile", "Query", new { file = ViewBag.CsvFile.FileName, type = ViewBag.CsvFile.FileType })">Скачать</a></td>
+        </tr>
+    }
+</table>
+
+
+<a type="button" class="btn btn-danger" href="@Url.Action("Queries","Home")">Назад</a>
+<span id="download"></span>
+<span id="result"></span>
+@section Scripts {
+    @Scripts.Render("~/Scripts/app.js")
+}
