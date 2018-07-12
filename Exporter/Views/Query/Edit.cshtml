@@ -5,80 +5,82 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Редактирование</h2>
+<div class="al-xz-custom-page">
+    <h2>Редактирование</h2>
 
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <h4>Запрос</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model => model.SqlQueryId)
+        <div class="form-horizontal">
+            <h4>Запрос</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.SqlQueryId)
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.SqlQueryName, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.SqlQueryName, new { htmlAttributes = new { @class = "form-control show-btn" } })
-            @Html.ValidationMessageFor(model => model.SqlQueryName, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.SqlQueryContent, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.SqlQueryContent, new { htmlAttributes = new { @class = "SqlQueryContent", @style = "display: none;" } })
-            @Html.ValidationMessageFor(model => model.SqlQueryContent, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <span id="create-param"></span>
-    <hr />
-    <div class="row">
-        <button type="button" id="add-button" class="btn btn-primary col-md-2 col-md-offset-2" onclick="addParameter()">+ Добавить параметр</button>
-    </div>
-    <br />
-    <span id="fields">
-        @if (ViewBag.QueryParameters != null && !(ViewBag.QueryParameters.Count <= 0))
-        {
-
-            foreach (Exporter.Models.Entities.Parameter parameter in ViewBag.QueryParameters)
-            {
-                string name = parameter.ParameterName.Replace("@", "");
-                string parameterNameId = String.Format("id-{0}", name);
-                string btnEditId = String.Format("edit-{0}", name);
-                string btnRemoveId = String.Format("remove-{0}", name);
-
-                <div class="form-group" id="@parameterNameId">
-                    <label class="control-label col-md-2" for="@parameter.ParameterName">@parameter.ParameterName</label>
-                    <input type="hidden" name="parameterIds[]" value="@parameter.ParameterId" />
-                    <div class="col-md-3">
-                        <input type="@parameter.ParameterType" name="@parameter.ParameterName" data-name="@parameter.ParameterName" class="form-control text-box single-line parameter" />
-                    </div>
-                    <div class="col-md-1 text-center">
-                        <button type="button" id="@btnEditId" data-id="@parameter.ParameterId" data-parentid="@parameterNameId" class="btn btn-default" onclick="editParameter('@btnEditId')"><i class="fa fa-pencil" aria-hidden="true" title="Редактировать" data-toggle="tooltip" data-placement="top"></i></button>
-                    </div>
-                    <div class="col-md-1 text-center">
-                        <button type="button" id="@btnRemoveId" class="btn btn-default" onclick="removeParameter('@parameter.ParameterId')"><i class="fa fa-trash" aria-hidden="true" title="Удалить" data-toggle="tooltip" data-placement="top"></i></button>
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SqlQueryName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.SqlQueryName, new { htmlAttributes = new { @class = "form-control show-btn" } })
+                    @Html.ValidationMessageFor(model => model.SqlQueryName, "", new { @class = "text-danger" })
                 </div>
-            }
+            </div>
 
-        }
-    </span>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SqlQueryContent, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.SqlQueryContent, new { htmlAttributes = new { @class = "SqlQueryContent", @style = "display: none;" } })
+                    @Html.ValidationMessageFor(model => model.SqlQueryContent, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10" style="padding-left: 1.12%;">
-            <button type="button" class="btn btn-info" onclick="execute()">Выполнить</button> |
-            <input type="submit" value="Сохранить" class="btn btn-default" id="Save" /> |
-            <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Query")">Назад</a>
+            <span id="create-param"></span>
+            <hr />
+            <div class="row">
+                <button type="button" id="add-button" class="btn btn-primary col-md-2 col-md-offset-2" onclick="addParameter()">+ Добавить параметр</button>
+            </div>
+            <br />
+            <span id="fields">
+                @if (ViewBag.QueryParameters != null && !(ViewBag.QueryParameters.Count <= 0))
+                {
+
+                    foreach (Exporter.Models.Entities.Parameter parameter in ViewBag.QueryParameters)
+                    {
+                        string name = parameter.ParameterName.Replace("@", "");
+                        string parameterNameId = String.Format("id-{0}", name);
+                        string btnEditId = String.Format("edit-{0}", name);
+                        string btnRemoveId = String.Format("remove-{0}", name);
+
+                        <div class="form-group" id="@parameterNameId">
+                            <label class="control-label col-md-2" for="@parameter.ParameterName">@parameter.ParameterName</label>
+                            <input type="hidden" name="parameterIds[]" value="@parameter.ParameterId" />
+                            <div class="col-md-3">
+                                <input type="@parameter.ParameterType" name="@parameter.ParameterName" data-name="@parameter.ParameterName" class="form-control text-box single-line parameter" />
+                            </div>
+                            <div class="col-md-1 text-center">
+                                <button type="button" id="@btnEditId" data-id="@parameter.ParameterId" data-parentid="@parameterNameId" class="btn btn-default" onclick="editParameter('@btnEditId')"><i class="fa fa-pencil" aria-hidden="true" title="Редактировать" data-toggle="tooltip" data-placement="top"></i></button>
+                            </div>
+                            <div class="col-md-1 text-center">
+                                <button type="button" id="@btnRemoveId" class="btn btn-default" onclick="removeParameter('@parameter.ParameterId')"><i class="fa fa-trash" aria-hidden="true" title="Удалить" data-toggle="tooltip" data-placement="top"></i></button>
+                            </div>
+                        </div>
+                    }
+
+                }
+            </span>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10" style="padding-left: 1.12%;">
+                    <button type="button" class="btn btn-info" onclick="execute()">Выполнить</button> |
+                    <input type="submit" value="Сохранить" class="btn btn-default" id="Save" /> |
+                    <a class="btn btn-default" name="backButton" id="backButton" href="@Url.Action("Index","Query")">Назад</a>
+                </div>
+            </div>
         </div>
-    </div>
+    }
+    <span id="result"></span>
 </div>
-}
-<span id="result"></span>
 
 
 @section Scripts {

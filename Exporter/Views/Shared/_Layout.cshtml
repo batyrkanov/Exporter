@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title – приложение ASP.NET</title>
+    <title>@ViewBag.Title | Выходные таблицы</title>
     @Styles.Render("~/Content/bootstrap-multiselect.css")
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")   
@@ -17,7 +17,7 @@
     @Styles.Render("~/Content/assets/css/pe-icon-7-stroke.css")
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -27,11 +27,11 @@
                 </button>
                 @if (Request.IsAuthenticated)
                 {
-                    @Html.ActionLink("Имя приложения", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                    @Html.ActionLink("Выходные таблицы", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
                 }
                 else
                 {
-                    @Html.ActionLink("Имя приложения", "Login", "Account", new { area = "" }, new { @class = "navbar-brand" })
+                    @Html.ActionLink("Выходные таблицы", "Login", "Account", new { area = "" }, new { @class = "navbar-brand" })
                 }
             </div>
             <div class="collapse navbar-collapse">
@@ -42,8 +42,8 @@
     <div class="container body-content">
         @RenderBody()
     </div>
-    <footer class="footer">
-        <div class="container-fluid">
+    <footer class="footer navbar-fixed-bottom">
+        <div class="container">
             @if (DateTime.Now.Year == 2018)
             {
                 <p class="copyright pull-right">&copy; @DateTime.Now.Year Отдел программирования ГВЦ</p>
