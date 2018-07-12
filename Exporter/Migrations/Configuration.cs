@@ -5,7 +5,7 @@ namespace Exporter.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Exporter.Models.Entities.SqlQueryParameterContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<Exporter.Models.Contexts.SqlQueryParameterContext>
     {
         public Configuration()
         {
@@ -13,7 +13,7 @@ namespace Exporter.Migrations
             ContextKey = "Exporter.Models.Entities.SqlQueryParameterContext";
         }
 
-        protected override void Seed(Exporter.Models.Entities.SqlQueryParameterContext context)
+        protected override void Seed(Exporter.Models.Contexts.SqlQueryParameterContext context)
         {
             //  This method will be called after migrating to the latest version.
 

@@ -6,7 +6,7 @@
     </div>
 
     <div class="col-md-4" style="padding-left: 2px;">
-        @Html.EditorFor(model => model.ParameterName, new { htmlAttributes = new { @class = "form-control", @placeholder = "наименование для замены", @requried = true } })
+        @Html.EditorFor(model => model.ParameterName, new { htmlAttributes = new { @class = "form-control", @placeholder = "наименование для замены", @requried = true} })
         @Html.ValidationMessageFor(model => model.ParameterName, "", new { @class = "text-danger" })
         <p>Наименование для замены</p>
     </div>
