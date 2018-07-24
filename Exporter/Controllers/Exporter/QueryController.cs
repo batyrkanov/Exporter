@@ -159,7 +159,10 @@ namespace Exporter.Controllers.Exporter
             Executor executor = new Executor(input, parameters);
 
             try { executor.Execute(); return PartialView(executor.Result); }
-            catch { return PartialView("~/Views/Query/Error.cshtml"); }
+            catch (Exception ex) {
+                ViewBag.Message = ex.Message;
+                return PartialView("~/Views/Query/Error.cshtml");
+            }
         }
 
         [HttpPost]
