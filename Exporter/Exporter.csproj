@@ -254,7 +254,10 @@
     <Content Include="App_Data\ExporterDB_log.ldf">
       <DependentUpon>ExporterDB.mdf</DependentUpon>
     </Content>
+    <Content Include="Content\6.png" />
+    <Content Include="Content\7.png" />
     <Content Include="Content\assets\css\pe-icon-7-stroke.css" />
+    <Content Include="Content\assets\img\Preloader_1.svg" />
     <Content Include="Content\bootstrap-multiselect.css" />
     <Content Include="App_Data\IdentityDb.mdf" />
     <Content Include="App_Data\IdentityDb_log.ldf">
@@ -927,7 +930,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\assets\img\" />
     <Folder Include="Content\CodeMirror\bin\" />
     <Folder Include="Files\" />
     <Folder Include="Views\DeleteFileAttribute\" />
