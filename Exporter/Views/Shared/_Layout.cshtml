@@ -5,16 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title | Выходные таблицы</title>
-    @Styles.Render("~/Content/bootstrap-multiselect.css")
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")   
-
+    <link rel="stylesheet" href="~/Content/bootstrap-multiselect.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
     <link rel="stylesheet" href="~/Content/styles/default.css" />
     <link rel="stylesheet" href="~/Content/CodeMirror/theme/dracula.css" />
     <link rel="stylesheet" href="~/Content/CodeMirror/lib/codemirror.css" />
     <link rel="stylesheet" href="~/Content/CodeMirror/addon/hint/show-hint.css" />
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    @Styles.Render("~/Content/assets/css/pe-icon-7-stroke.css")
+    <link rel="stylesheet" href="~/Content/assets/css/pe-icon-7-stroke.css" />
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
 </head>
 <body>
     <div class="navbar navbar-default navbar-fixed-top">
@@ -54,10 +55,9 @@
             }
         </div>
     </footer>
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/Scripts/bootstrap-multiselect.js")
-    @Scripts.Render("~/Scripts/app.js")
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap-multiselect.js"></script>
+    <script src="~/Scripts/app.js"></script>
     <script src="~/Scripts/highlight/highlight.pack.js"></script>
     <script src="~/Content/CodeMirror/lib/codemirror.js"></script>
     <script src="~/Content/CodeMirror/mode/sql/sql.js"></script>
@@ -66,6 +66,5 @@
     <script src="~/Content/CodeMirror/addon/selection/active-line.js"></script>
     <script src="~/Content/CodeMirror/addon/edit/matchbrackets.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    @RenderSection("scripts", required: false)
 </body>
 </html>

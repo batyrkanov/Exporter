@@ -255,7 +255,6 @@
       <DependentUpon>ExporterDB.mdf</DependentUpon>
     </Content>
     <Content Include="Content\assets\css\pe-icon-7-stroke.css" />
-    <Content Include="Content\assets\img\Preloader_2.gif" />
     <Content Include="Content\bootstrap-multiselect.css" />
     <Content Include="App_Data\IdentityDb.mdf" />
     <Content Include="App_Data\IdentityDb_log.ldf">
@@ -332,7 +331,6 @@
     <Content Include="Content\CodeMirror\addon\tern\tern.js" />
     <Content Include="Content\CodeMirror\addon\tern\worker.js" />
     <Content Include="Content\CodeMirror\addon\wrap\hardwrap.js" />
-    <Content Include="Content\CodeMirror\bin\upload-release.js" />
     <Content Include="Content\CodeMirror\keymap\emacs.js" />
     <Content Include="Content\CodeMirror\keymap\sublime.js" />
     <Content Include="Content\CodeMirror\keymap\vim.js" />
@@ -832,10 +830,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CodeMirror\bin\authors.sh" />
-    <Content Include="Content\CodeMirror\bin\lint" />
-    <Content Include="Content\CodeMirror\bin\release" />
-    <Content Include="Content\CodeMirror\bin\source-highlight" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\highlight\highlight.pack.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -932,6 +927,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Content\assets\img\" />
+    <Folder Include="Content\CodeMirror\bin\" />
     <Folder Include="Files\" />
     <Folder Include="Views\DeleteFileAttribute\" />
   </ItemGroup>
